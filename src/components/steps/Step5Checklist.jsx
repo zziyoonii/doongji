@@ -98,23 +98,36 @@ const getKeyEvents = (balanceDate) => [
   {
     title: '🔑 잔금일 · 이사',
     date: balanceDate,
-    details: '잔금 이체, 열쇠 수령, 소유권이전등기 신청',
+    details: [
+      '☐ 이체한도 미리 올려두기',
+      '☐ 잔금 이체 완료',
+      '☐ 열쇠 · 카드키 수령',
+      '☐ 소유권이전등기 신청 (법무사 또는 셀프)',
+      '☐ 주택화재보험 가입',
+    ].join('\n'),
     badge: 'D+0',
-    color: 'green',
   },
   {
     title: '📋 전입신고 · 확정일자',
     date: addDays(balanceDate, 1),
-    details: '이사 당일 또는 익일 주민센터 방문 / 인터넷등기소 가능',
+    details: [
+      '☐ 전입신고 (주민센터 방문 또는 정부24)',
+      '☐ 확정일자 받기 (주민센터 또는 인터넷등기소)',
+      '☐ 관리비 명의 변경',
+    ].join('\n'),
     badge: 'D+1',
-    color: 'purple',
   },
   {
     title: '🏛️ 취득세 신고·납부 마감',
     date: addDays(balanceDate, 60),
-    details: '잔금일로부터 60일 이내 위택스(www.wetax.go.kr)에서 신고·납부',
+    details: [
+      '☐ 위택스(wetax.go.kr)에서 취득세 신고',
+      '☐ 납부 완료 확인',
+      '',
+      '⚠️ 잔금일로부터 60일 이내 필수!',
+      '늦으면 가산세가 붙어요.',
+    ].join('\n'),
     badge: 'D+60',
-    color: 'red',
   },
 ]
 
