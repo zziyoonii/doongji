@@ -9,7 +9,7 @@ const STEPS = [
   { id: 1, label: '대출 한도', icon: '🏦', short: '대출' },
   { id: 2, label: '필요 현금', icon: '💰', short: '현금' },
   { id: 3, label: '취득세', icon: '📄', short: '세금' },
-  { id: 4, label: '월 여유', icon: '📅', short: '월납' },
+  { id: 4, label: '월 상환', icon: '📅', short: '월납' },
   { id: 5, label: '체크리스트', icon: '✅', short: '체크' },
 ]
 
@@ -26,11 +26,7 @@ export default function App() {
     setStepData(prev => ({ ...prev, [`step${num}`]: data }))
   }
 
-  const canGoNext = () => {
-    if (step === 1) return !!stepData.step1?.housePrice
-    if (step === 2) return !!stepData.step2?.savings
-    return true
-  }
+  const goTo = (n) => setStep(Math.max(1, Math.min(5, n)))
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
@@ -52,9 +48,7 @@ export default function App() {
             {STEPS.map((s) => (
               <button
                 key={s.id}
-                onClick={() => {
-                  if (s.id <= step) setStep(s.id)
-                }}
+                onClick={() => setStep(s.id)}
                 className={`flex-1 flex flex-col items-center py-2 px-1 rounded-xl transition-all text-center ${
                   step === s.id
                     ? 'bg-amber-400 text-white'
@@ -101,7 +95,7 @@ export default function App() {
         <div className="max-w-lg mx-auto px-4 py-3 flex gap-3">
           {step > 1 && (
             <button
-              onClick={() => setStep(s => s - 1)}
+              onClick={() => goTo(step - 1)}
               className="flex-1 py-3.5 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold text-sm transition-all hover:border-gray-300 active:scale-95"
             >
               ← 이전
@@ -109,15 +103,8 @@ export default function App() {
           )}
           {step < 5 && (
             <button
-              onClick={() => {
-                if (canGoNext()) setStep(s => Math.min(s + 1, 5))
-              }}
-              disabled={!canGoNext()}
-              className={`flex-1 py-3.5 rounded-2xl font-semibold text-sm transition-all active:scale-95 ${
-                canGoNext()
-                  ? 'bg-amber-400 text-white hover:bg-amber-500 shadow-md shadow-amber-200'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
+              onClick={() => goTo(step + 1)}
+              className="flex-1 py-3.5 rounded-2xl font-semibold text-sm transition-all active:scale-95 bg-amber-400 text-white hover:bg-amber-500 shadow-md shadow-amber-200"
             >
               {step === 4 ? '체크리스트 보기 →' : '다음 단계 →'}
             </button>
