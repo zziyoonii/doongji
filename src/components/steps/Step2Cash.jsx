@@ -97,14 +97,29 @@ export default function Step2Cash({ data, onChange, prevData }) {
         </h3>
         <div className="space-y-3">
           <NumberInput label="이사 비용" value={movingCost} onChange={setMovingCost} unit="만원" placeholder="200" hint="이삿짐센터 + 청소 등" />
-          <NumberInput
-            label="부동산 중개보수"
-            value={agentFee}
-            onChange={setAgentFee}
-            unit="만원"
-            placeholder={String(autoFee)}
-            hint={autoFee ? `집값 기준 법정 상한: 약 ${autoFee.toLocaleString()}만원` : ''}
-          />
+          <div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">부동산 중개보수</label>
+              {autoFee > 0 && (
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
+                  <span>⚠️ 법정 상한:</span>
+                  <strong>{autoFee.toLocaleString()}만원</strong>
+                  <span className="text-amber-500">— 실제로는 더 적을 수 있어요</span>
+                </div>
+              )}
+              <div className="flex items-center border border-gray-200 rounded-xl bg-white overflow-hidden focus-within:ring-2 focus-within:ring-amber-400 focus-within:border-transparent transition-all">
+                <input
+                  type="number"
+                  value={agentFee}
+                  onChange={e => setAgentFee(e.target.value)}
+                  placeholder={String(autoFee)}
+                  className="flex-1 px-4 py-3 text-base outline-none bg-transparent"
+                />
+                <span className="px-3 text-sm text-gray-400 bg-gray-50 self-stretch flex items-center border-l border-gray-200">만원</span>
+              </div>
+              <p className="text-xs text-gray-400">협의로 더 낮출 수 있어요. 실제 금액이 정해지면 수정하세요</p>
+            </div>
+          </div>
           <NumberInput label="입주 인테리어·가구" value={furnish} onChange={setFurnish} unit="만원" placeholder="0" />
         </div>
       </div>
