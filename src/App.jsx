@@ -90,6 +90,19 @@ export default function App() {
         )}
       </main>
 
+      {/* 푸터 */}
+      <footer className="max-w-lg mx-auto px-4 py-6 flex items-center justify-center gap-2 flex-wrap text-xs text-gray-400">
+        <span>Made by <strong className="text-gray-600">김지윤 (Qoo)</strong></span>
+        <span>·</span>
+        <a href="https://jiyoonportfolio.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">Portfolio</a>
+        <span>·</span>
+        <a href="https://github.com/zziyoonii" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">GitHub</a>
+        <span>·</span>
+        <a href="https://www.linkedin.com/in/aroundjiyoon/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">LinkedIn</a>
+        <span>·</span>
+        <a href="https://npm-run-ops.tistory.com/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">Blog</a>
+      </footer>
+
       {/* 하단 네비게이션 */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-20">
         <div className="max-w-lg mx-auto px-4 py-3 flex gap-3">
