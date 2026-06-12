@@ -13,11 +13,61 @@ export const DISCOUNTS = [
 ]
 
 export const CHECKS = [
-  ['잔금일 D-7', ['주식 매도 (국내 입금까지 영업일 2일!)', '대출 실행일·금액 은행 최종 확인', '보증금 반환 일정 집주인과 확정']],
-  ['잔금일 D-1', ['인지대+채권 비용 은행 계좌 입금', '법무사에게 카드 납부 의사 전달', '이체 한도 상향 (1억 이상!)']],
-  ['잔금일 당일', ['보증금 받고 → 기존 대출 즉시 상환', '잔금 이체 → 등기서류 확인', '관리비·장기수선충당금 정산', '선수관리비는 전 주인에게 지급']],
-  ['이사 후 3개월 내', ['전입신고 (감면 필수 조건!)', '취득세 신고·납부 (60일 이내)', '생애최초·신생아 감면 신청', '인터넷·도시가스 이전']],
+  {
+    phase: '대출 준비 시작', days: -60, items: [
+      { text: '디딤돌/보금자리론 신청 시작 (심사까지 2~3주 소요)' },
+      { text: '주택금융공사 예상대출조회 확인', link: 'https://www.hf.go.kr', linkLabel: 'HF 예상대출조회 바로가기' },
+    ],
+  },
+  {
+    phase: 'D-30', days: -30, items: [
+      { text: '대출 승인 확인' },
+      { text: '이사업체 예약 (인기 날짜는 1달 전 마감!)' },
+      { text: '인터넷 이전 신청' },
+    ],
+  },
+  {
+    phase: 'D-7', days: -7, items: [
+      { text: '주식 매도 (국내 입금까지 영업일 2일!)' },
+      { text: '은행 이체 한도 상향 확인 (1억 이상)' },
+      { text: '보증금 반환 일정 집주인과 최종 확인' },
+    ],
+  },
+  {
+    phase: 'D-1', days: -1, items: [
+      { text: '인지대+채권 비용 은행 계좌 입금 (65만원 여유있게)' },
+      { text: '법무사에게 카드 납부 의사 전달' },
+      { text: '법무사 보수료 준비 확인' },
+    ],
+  },
+  {
+    phase: '당일', days: 0, items: [
+      { text: '보증금 받고 → 기존 대출 즉시 상환' },
+      { text: '잔금 이체 → 등기서류 확인' },
+      { text: '관리비·장기수선충당금 정산' },
+      { text: '선수관리비 전 주인에게 지급' },
+      { text: '이사' },
+    ],
+  },
+  {
+    phase: '이사 후', days: 60, items: [
+      { text: '전입신고 (취득세 감면 필수! 3개월 이내)', days: 90 },
+      { text: '취득세 신고·납부 (60일 이내)', days: 60, link: 'https://www.wetax.go.kr', linkLabel: '위택스 바로가기' },
+      { text: '생애최초·신생아 감면 신청', days: 60 },
+      { text: '인터넷·도시가스·전기 명의 이전', days: 14 },
+    ],
+  },
 ]
+
+export function addDays(dateStr, n) {
+  const dt = new Date(dateStr)
+  dt.setDate(dt.getDate() + n)
+  return dt
+}
+
+export function formatDateKo(date) {
+  return `${date.getMonth() + 1}월 ${date.getDate()}일`
+}
 
 export const fmt = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '만원'
 export const fmtW = n => Math.round(n).toLocaleString('ko-KR') + '원'

@@ -14,7 +14,7 @@ const initialD = {
     { id: 'move', name: '이사비', a: 120 },
     { id: 'agent', name: '중개수수료', a: 225 },
   ],
-  isFirst: true, baby: 'none', benefits: ['first'], living: 100, months: 4, done: {},
+  isFirst: true, baby: 'none', benefits: ['first'], living: 100, months: 4, done: {}, balanceDate: '',
 }
 
 export function AppProvider({ children }) {
