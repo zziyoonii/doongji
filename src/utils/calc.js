@@ -28,15 +28,69 @@ export function mpay(p, rt, y) {
   return p * 1e4 * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)
 }
 
-export function limit(d) {
-  const rt = RATES[d.years]
+// 월 상환 가능액(만원)으로부터 원리금균등 상환 기준 대출 한도(만원) 역산
+function annuityLimit(monthlyCapacity, rate, years) {
+  if (monthlyCapacity <= 0) return 0
+  const r = rate / 100 / 12, n = years * 12
+  return Math.floor(monthlyCapacity * 1e4 / (r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)) / 1e4 / 100) * 100
+}
+
+export const LOAN_LABELS = {
+  didimdol: '디딤돌대출',
+  bogeumjari: 'HF 보금자리론',
+  general: '일반 주택담보대출',
+}
+
+// 집값·소득·가구 조건에 따라 가장 유리한 대출 상품을 추천
+export function recommendLoanType(d) {
+  if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
+  if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'
+  if (d.price <= 90000) return 'bogeumjari'
+  return 'general'
+}
+
+export function loanReason(type, d) {
+  if (type === 'didimdol') {
+    if (d.price <= 50000 && d.income <= 7000) {
+      return '집값·소득 조건에 맞는 디딤돌대출을 받을 수 있어요! 보금자리론보다 금리가 훨씬 낮아요 🎉'
+    }
+    return '신혼·다자녀 가구는 집값 6억원 이하면 디딤돌대출 한도가 늘어나요 🎉'
+  }
+  if (type === 'bogeumjari') return 'HF 보금자리론 기준으로 계산했어요'
+  return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
+}
+
+export function didimdolLimit(d) {
   const ltv = Math.floor(d.price * .7 / 100) * 100
-  const r = rt / 100 / 12, n = d.years * 12
+  const cap = (d.newlywed || d.multichild) ? 40000 : d.isFirst ? 30000 : 25000
+  const fin = Math.max(Math.min(ltv, cap), 0)
+  return { type: 'didimdol', ltv, cap, fin, rate: 2.55, rateLabel: '2.1~3.0%' }
+}
+
+export function bogeumjariLimit(d) {
+  const rate = RATES[d.years]
+  const ltvPct = d.isFirst ? .8 : .7
+  const ltv = Math.floor(d.price * ltvPct / 100) * 100
+  const cap = d.isFirst ? 42000 : 36000
+  const mm = (d.income / 12) * .6 - d.existingMonthly
+  const dtiL = annuityLimit(mm, rate, d.years)
+  const fin = Math.max(Math.min(ltv, cap, dtiL), 0)
+  return { type: 'bogeumjari', ltv, ltvPct: ltvPct * 100, cap, dtiL, fin, rate }
+}
+
+export function generalLimit(d) {
+  const rate = RATES[d.years]
+  const ltv = Math.floor(d.price * .7 / 100) * 100
   const mm = (d.income / 12) * .4 - d.existingMonthly
-  const dsrL = mm > 0 ? Math.floor(mm * 1e4 / (r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)) / 1e4 / 100) * 100 : 0
-  const fin = Math.max(Math.min(ltv, Math.max(dsrL, 0)), 0)
-  const dsr = d.income > 0 ? ((mpay(fin, rt, d.years) / 1e4) * 12 + d.existingMonthly * 12) / d.income * 100 : 0
-  return { ltv, dsrL, fin, dsr, rt }
+  const dsrL = annuityLimit(mm, rate, d.years)
+  const fin = Math.max(Math.min(ltv, dsrL), 0)
+  return { type: 'general', ltv, dsrL, fin, rate }
+}
+
+export function loanLimit(type, d) {
+  if (type === 'didimdol') return didimdolLimit(d)
+  if (type === 'bogeumjari') return bogeumjariLimit(d)
+  return generalLimit(d)
 }
 
 export function flow(d) {

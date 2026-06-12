@@ -5,6 +5,7 @@ const STATE_KEY = 'dungi-state-v2'
 
 const initialD = {
   price: 53500, income: 4000, existingMonthly: 0, years: 40, loan: 0,
+  newlywed: false, multichild: false, loanTypeOverride: null,
   deposit: 5350, guarantee: 5900, oldLoan: 2250, cash: 7400, stock: 58, borrow: 0,
   fees: [
     { id: 'legal', name: '법무사 보수료', a: 30 },
