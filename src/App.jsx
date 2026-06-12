@@ -1,5 +1,5 @@
 import { useApp } from './context/useApp'
-import { STEPS } from './utils/calc'
+import { STEPS, STEP_SHORT } from './utils/calc'
 import Step1Loan from './components/steps/Step1Loan'
 import Step2Cash from './components/steps/Step2Cash'
 import Step3Tax from './components/steps/Step3Tax'
@@ -30,26 +30,21 @@ export default function App() {
         )}
       </header>
 
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <div aria-label="진행 단계" style={{ display: 'flex', gap: 6 }}>
-          {STEPS.map((s, i) => (
-            <span key={s} title={s} style={{ fontSize: 16, opacity: i <= step ? 1 : .25, transition: 'opacity .3s' }}>🥚</span>
-          ))}
+      <nav className="stepper" aria-label="진행 단계">
+        <div className="stepper-track">
+          <div className="stepper-track-fill" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }} />
         </div>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {STEPS.map((s, i) => (
-            <button
-              key={s}
-              onClick={() => go(i)}
-              style={{
-                fontSize: 11.5, padding: '5px 9px', borderRadius: 99,
-                ...(i === step ? { background: 'var(--nest)', color: '#fff', fontWeight: 700 } : { color: 'var(--ink-soft)' }),
-              }}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        {STEPS.map((s, i) => (
+          <button
+            key={s}
+            title={s}
+            onClick={() => go(i)}
+            className={`stepper-item ${i < step ? 'done' : i === step ? 'active' : 'upcoming'}`}
+          >
+            <span className="step-badge">🥚</span>
+            <span className="step-label">{STEP_SHORT[i]}</span>
+          </button>
+        ))}
       </nav>
 
       <main>

@@ -400,6 +400,90 @@ button:focus-visible {
   color: var(--ink);
 }
 
+.stepper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.stepper-track {
+  position: absolute;
+  top: 14px;
+  left: calc(10% / 2);
+  right: calc(10% / 2);
+  height: 2px;
+  background: var(--line);
+  z-index: 0;
+}
+
+.stepper-track-fill {
+  height: 2px;
+  background: var(--nest);
+  transition: width .3s ease;
+}
+
+.stepper-item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+.step-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  background: var(--line);
+  transition: background .3s ease;
+}
+
+.stepper-item.done .step-badge {
+  background: var(--nest-soft);
+}
+
+.stepper-item.active .step-badge {
+  background: var(--egg-soft);
+  box-shadow: 0 0 0 2px var(--egg);
+}
+
+.stepper-item.upcoming .step-badge {
+  background: var(--line);
+}
+
+.stepper-item.upcoming .step-badge span,
+.stepper-item.upcoming .step-badge {
+  opacity: .5;
+}
+
+.step-label {
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.stepper-item.done .step-label {
+  color: var(--nest);
+  font-weight: 600;
+}
+
+.stepper-item.active .step-label {
+  color: var(--egg);
+  font-weight: 700;
+}
+
+.stepper-item.upcoming .step-label {
+  color: var(--ink-soft);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
