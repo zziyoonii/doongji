@@ -27,7 +27,7 @@ export function AppProvider({ children }) {
     }
     return initialD
   })
-  const [isPlus, setIsPlus] = useState(() => localStorage.getItem(PLUS_KEY) === '1')
+  const [isPlus, setIsPlus] = useState(() => localStorage.getItem(PLUS_KEY) !== '0')
   const [step, setStep] = useState(0)
   const [paywallOpen, setPaywallOpen] = useState(false)
 
