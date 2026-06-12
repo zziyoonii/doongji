@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { AppContext } from './context'
 
 const STATE_KEY = 'dungi-state-v2'
-const PLUS_KEY = 'dungi-plus'
 
 const initialD = {
   price: 53500, income: 4000, existingMonthly: 0, years: 40, loan: 0,
@@ -27,17 +26,13 @@ export function AppProvider({ children }) {
     }
     return initialD
   })
-  const [isPlus, setIsPlus] = useState(() => localStorage.getItem(PLUS_KEY) !== '0')
+  const [isPlus, setIsPlus] = useState(true)
   const [step, setStep] = useState(0)
   const [paywallOpen, setPaywallOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem(STATE_KEY, JSON.stringify(d))
   }, [d])
-
-  useEffect(() => {
-    localStorage.setItem(PLUS_KEY, isPlus ? '1' : '0')
-  }, [isPlus])
 
   const set = (key, value) => setD(prev => ({ ...prev, [key]: value }))
 
