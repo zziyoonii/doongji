@@ -24,7 +24,7 @@ export default function Step1Loan() {
         <WhyToggle q="소득이 왜 필요해요?">
           은행은 갚을 능력을 확인해요. 월급 대비 매달 갚는 돈이 많으면 대출이 줄어요. 집값·소득에 따라 디딤돌대출 · HF 보금자리론 · 일반 주택담보대출 중 어떤 상품을 받을 수 있는지도 달라져요.
         </WhyToggle>
-        <Field label="연소득이 얼마예요?" sub="부부라면 합산 소득으로" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
+        <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
         <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} />
 
         <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>

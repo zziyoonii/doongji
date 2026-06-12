@@ -10,7 +10,7 @@ export default function Step4Monthly() {
   const cut = Math.min(d.benefits.reduce((a, id) => a + (DISCOUNTS.find(x => x.id === id)?.r || 0), 0), 1)
   const rt = +(base - cut).toFixed(2)
   const m = mpay(d.loan, rt, d.years)
-  const inc = d.income / 12 * 1e4
+  const inc = d.netIncome * 1e4
   const left = inc - m - d.living * 1e4 - d.existingMonthly * 1e4
 
   const result = (
@@ -50,6 +50,7 @@ export default function Step4Monthly() {
             </button>
           )
         })}
+        <Field label="월 실수령액 (세후)" sub="월급에서 세금·보험 떼고 받는 금액 · (실제 통장에 들어오는 금액)" unit="만원/월" value={d.netIncome} onChange={v => set('netIncome', v)} />
         <Field label="한 달 생활비" sub="식비·교통·통신 등" unit="만원" value={d.living} onChange={v => set('living', v)} />
       </div>
 
