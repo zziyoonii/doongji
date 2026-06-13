@@ -34,7 +34,24 @@ function buildCalendar(events) {
   ].join('\r\n')
 }
 
-function download(content, filename) {
+function toBase64(content) {
+  const bytes = new TextEncoder().encode(content)
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary)
+}
+
+async function download(content, filename) {
+  if (typeof window !== 'undefined' && window.ReactNativeWebView) {
+    const { saveBase64Data } = await import('@apps-in-toss/web-framework')
+    await saveBase64Data({
+      data: toBase64(content),
+      fileName: filename,
+      mimeType: 'text/calendar',
+    })
+    return
+  }
+
   const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -47,10 +64,10 @@ function download(content, filename) {
 }
 
 export function downloadIcsEvent(title, date) {
-  download(buildCalendar([buildEvent(title, date)]), `${title}.ics`)
+  return download(buildCalendar([buildEvent(title, date)]), `${title}.ics`)
 }
 
 export function downloadIcsAll(items) {
   const events = items.map(({ title, date }) => buildEvent(title, date))
-  download(buildCalendar(events), '둥지-이사일정.ics')
+  return download(buildCalendar(events), '둥지-이사일정.ics')
 }
