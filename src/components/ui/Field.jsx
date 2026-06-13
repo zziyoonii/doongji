@@ -7,7 +7,7 @@ export default function Field({ label, sub, unit, value, onChange }) {
         <input
           type="number"
           inputMode="decimal"
-          value={value ?? ''}
+          value={value || ''}
           onChange={e => onChange(+e.target.value || 0)}
         />
         <span>{unit}</span>

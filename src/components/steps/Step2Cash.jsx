@@ -36,7 +36,7 @@ export default function Step2Cash() {
             {f.why && <WhyToggle q={`${f.name}이 뭐예요?`}>{f.why}</WhyToggle>}
             <div className="flabel">{f.name}</div>
             <div className="frow">
-              <input type="number" value={f.a} onChange={e => setFee(i, +e.target.value || 0)} />
+              <input type="number" value={f.a || ''} onChange={e => setFee(i, +e.target.value || 0)} />
               <span>만원</span>
             </div>
           </div>
