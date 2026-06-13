@@ -182,11 +182,17 @@ button:focus-visible {
 
 .row .l {
   color: var(--ink-soft);
+  flex: 1;
+  min-width: 0;
+  word-break: keep-all;
+  padding-right: 8px;
 }
 
 .row .r {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .r.plus {
