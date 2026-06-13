@@ -91,7 +91,7 @@ export const LOAN_LABELS = {
   general: '일반 주택담보대출',
 }
 
-// 집값·소득·가구 조건에 따라 가장 유리한 대출 상품을 추천
+// 집값·소득·가구 조건에 따라 해당될 수 있는 대출 상품을 계산
 export function recommendLoanType(d) {
   if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
   if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'

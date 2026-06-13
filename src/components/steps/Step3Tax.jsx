@@ -43,7 +43,7 @@ export default function Step3Tax() {
         <div className="row"><span className="l">월 납부액</span><span className="r">{fmt(t.fin / m)}</span></div>
         <div className="row"><span className="l">예상 수수료 (연 10~18%)</span><span className="r minus">{fmt(lo)} ~ {fmt(hi)}</span></div>
         <p style={{ fontSize: 12.5, color: 'var(--ink-soft)', marginTop: 10, lineHeight: 1.6 }}>
-          위택스 일시불은 수수료 0원. 할부는 카드사 <b>무이자 이벤트</b>부터 확인하세요 — 매달 바뀌어요!
+          위택스 일시불은 수수료 0원. <b>카드사 앱에서 이번 달 무이자 할부 이벤트를 확인하세요</b> — 매달 바뀌어요!
         </p>
       </div>
     </div>

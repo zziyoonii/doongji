@@ -52,7 +52,7 @@ export default function App() {
       </main>
 
       <footer style={{ marginTop: 36, fontSize: 11.5, color: 'var(--ink-soft)', lineHeight: 1.7, textAlign: 'center' }}>
-        <p>계산 결과는 참고용이에요. 실제 한도·세율·금리는 은행과 위택스에서 꼭 확인하세요.</p>
+        <p>이 앱은 참고용 계산 도구예요. 금융 상품을 중개하거나 권유하지 않아요.<br />실제 대출 가능 여부는 해당 기관에서 확인하세요.</p>
         <div className="app-footer" style={{ marginTop: 12, display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span>Made by <strong style={{ color: 'var(--ink)' }}>김지윤 (Qoo)</strong></span>
           <span>·</span>

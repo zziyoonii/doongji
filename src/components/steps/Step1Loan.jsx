@@ -18,6 +18,10 @@ export default function Step1Loan() {
 
   return (
     <>
+      <p className="fsub" style={{ marginBottom: 14, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+        {'둥지는 생애최초 주택 구매를 위한 계산 도구예요.\n대출 한도·잔금·취득세를 쉽게 계산할 수 있어요.\n금융 상품을 중개하거나 권유하지 않아요.'}
+      </p>
+
       <div className="card">
         <div className="sect">🏠 사려는 집부터 알려주세요</div>
         <Field label="집값이 얼마예요?" sub="계약하려는 집의 매매가" unit="만원" value={d.price} onChange={v => set('price', v)} />
@@ -43,7 +47,7 @@ export default function Step1Loan() {
       </div>
 
       <div className="card">
-        <div className="sect">🧮 추천 대출 상품</div>
+        <div className="sect">🧮 내 조건에 해당할 수 있는 상품</div>
         <div className="flabel">{LOAN_LABELS[type]}</div>
         <p className="fsub">{reason}</p>
 
@@ -81,7 +85,7 @@ export default function Step1Loan() {
             {Object.entries(LOAN_LABELS).map(([key, label]) => (
               <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
             ))}
-            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 추천으로</Chip>
+            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 계산으로</Chip>
           </div>
         )}
       </div>
