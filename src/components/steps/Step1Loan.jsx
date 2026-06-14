@@ -1,190 +1,96 @@
-import { useState, useEffect } from 'react'
-import NumberInput from '../ui/NumberInput'
-import ResultCard from '../ui/ResultCard'
-import InfoToggle from '../ui/InfoToggle'
-import { formatManWon } from '../../utils/format'
+import { useState } from 'react'
+import { useApp } from '../../context/useApp'
+import { recommendLoanType, loanLimit, loanReason, LOAN_LABELS, mpay, fmt, fmtW } from '../../utils/calc'
+import Field from '../ui/Field'
+import WhyToggle from '../ui/WhyToggle'
+import Verdict from '../ui/Verdict'
+import Chip from '../ui/Chip'
 
-export default function Step1Loan({ data, onChange }) {
-  const [housePrice, setHousePrice] = useState(data.housePrice || '')
-  const [income, setIncome] = useState(data.income || '')
-  const [otherDebt, setOtherDebt] = useState(data.otherDebt || '')
-  const [loanTerm, setLoanTerm] = useState(data.loanTerm || '30')
-  const [houseType, setHouseType] = useState(data.houseType || 'apartment')
+export default function Step1Loan() {
+  const { d, set, go } = useApp()
+  const [showOverride, setShowOverride] = useState(false)
 
-  const ltv = houseType === 'apartment' ? 0.8 : 0.7
-  const ltvLabel = houseType === 'apartment' ? '80%' : '70%'
-
-  const ltvLimit = housePrice ? Math.floor(Number(housePrice) * ltv) : null
-
-  const rate = 0.039 // 보금자리론 기본 기준
-  const n = Number(loanTerm) * 12
-  const r = rate / 12
-
-  // DSR 40% 기반 최대 대출
-  const maxYearlyRepayment = income ? Number(income) * 10000 * 12 * 0.4 : null
-  const maxMonthly = maxYearlyRepayment ? maxYearlyRepayment / 12 : null
-  const otherMonthlyDebt = otherDebt ? (Number(otherDebt) * 10000 * rate) / 12 : 0
-  const availableMonthly = maxMonthly ? maxMonthly - otherMonthlyDebt : null
-
-  const factor = r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)
-  const dsrLimit = availableMonthly && factor ? Math.floor(availableMonthly / factor / 10000) : null
-
-  const loanLimit = ltvLimit && dsrLimit
-    ? Math.min(ltvLimit, dsrLimit)
-    : ltvLimit || dsrLimit || null
-
-  // 현재 DSR 비율 계산 (대출받았을 때)
-  const currentLoan = loanLimit ? loanLimit * 10000 : 0
-  const monthlyPayment = currentLoan && factor ? Math.round(currentLoan * factor) : 0
-  const yearlyPayment = monthlyPayment * 12
-  const yearlyIncome = income ? Number(income) * 10000 * 12 : 0
-  const dsrRatio = yearlyIncome > 0 ? Math.round((yearlyPayment / yearlyIncome) * 100) : null
-
-  useEffect(() => {
-    onChange({ housePrice, income, otherDebt, loanTerm, houseType, loanLimit, ltvLimit, dsrLimit })
-  }, [housePrice, income, otherDebt, loanTerm, houseType, loanLimit])
+  const autoType = recommendLoanType(d)
+  const type = d.loanTypeOverride || autoType
+  const r = loanLimit(type, d)
+  const monthly = mpay(r.fin, r.rate, d.years)
+  const reason = d.loanTypeOverride ? '직접 선택한 상품 기준으로 계산했어요' : loanReason(type, d)
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-800 mb-1">얼마까지 대출받을 수 있을까요?</h2>
-        <p className="text-sm text-gray-500">생애최초 기준으로 LTV·DSR을 함께 계산해드려요</p>
-      </div>
+    <>
+      <p className="fsub" style={{ marginBottom: 14, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+        {'둥지는 생애최초 주택 구매를 위한 계산 도구예요.\n대출 한도·잔금·취득세를 쉽게 계산할 수 있어요.\n금융 상품을 중개하거나 권유하지 않아요.'}
+      </p>
 
-      <div className="space-y-4">
-        {/* 주택 유형 */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-2">어떤 주택을 보고 계세요?</label>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { value: 'apartment', label: '🏢 아파트', sub: 'LTV 80% (생애최초)' },
-              { value: 'other', label: '🏠 빌라·오피스텔', sub: 'LTV 70%' },
-            ].map(opt => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setHouseType(opt.value)}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${houseType === opt.value ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-white'}`}
-              >
-                <div className="font-medium text-sm">{opt.label}</div>
-                <div className="text-xs text-gray-400 mt-0.5">{opt.sub}</div>
-              </button>
-            ))}
-          </div>
-          <div className="mt-2">
-            <InfoToggle>
-              <strong>LTV(주택담보대출비율)</strong>는 집값 대비 대출 한도예요. 생애최초 구매자는 규제지역 여부에 관계없이 아파트 80%까지 가능해요. 빌라·오피스텔은 70%가 상한이에요.
-            </InfoToggle>
-          </div>
+      <div className="card">
+        <div className="sect">🏠 사려는 집부터 알려주세요</div>
+        <Field label="집값이 얼마예요?" sub="계약하려는 집의 매매가" unit="만원" value={d.price} onChange={v => set('price', v)} />
+        <WhyToggle q="소득이 왜 필요해요?">
+          은행은 갚을 능력을 확인해요. 월급 대비 매달 갚는 돈이 많으면 대출이 줄어요. 집값·소득에 따라 디딤돌대출 · HF 보금자리론 · 일반 주택담보대출 중 어떤 상품을 받을 수 있는지도 달라져요.
+        </WhyToggle>
+        <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
+        <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} />
+
+        <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>
+        <div className="chips">
+          <Chip on={d.isFirst} onClick={() => set('isFirst', !d.isFirst)}>생애최초 구입</Chip>
+          <Chip on={d.newlywed} onClick={() => set('newlywed', !d.newlywed)}>신혼부부예요</Chip>
+          <Chip on={d.multichild} onClick={() => set('multichild', !d.multichild)}>2자녀 이상이에요</Chip>
         </div>
 
-        <NumberInput
-          label="보려는 집 가격은 얼마예요?"
-          value={housePrice}
-          onChange={setHousePrice}
-          unit="만원"
-          placeholder="50000"
-          hint="예: 5억이면 50000 입력"
-        />
-
-        <div>
-          <NumberInput
-            label="1년에 버는 돈(세전 연봉)은 얼마예요?"
-            value={income}
-            onChange={setIncome}
-            unit="만원"
-            placeholder="5000"
-          />
-          <div className="mt-2">
-            <InfoToggle>
-              <strong>DSR(총부채원리금상환비율)</strong>은 1년 소득 대비 연간 원리금 상환액의 비율이에요. 은행은 이 비율이 40%를 넘지 않는 선에서만 대출해줘요. 대출 한도에 가장 큰 영향을 줘요.
-            </InfoToggle>
-          </div>
-        </div>
-
-        <NumberInput
-          label="지금 갚고 있는 다른 대출 총액"
-          value={otherDebt}
-          onChange={setOtherDebt}
-          unit="만원"
-          placeholder="0"
-          hint="자동차 할부, 신용대출 등 모두 포함. 없으면 0"
-        />
-
-        {/* 만기 선택 */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-2">대출 만기는 몇 년으로 할까요?</label>
-          <div className="flex gap-2">
-            {['20', '30', '40'].map(y => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setLoanTerm(y)}
-                className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${loanTerm === y ? 'border-amber-400 bg-amber-50 text-amber-700' : 'border-gray-200 bg-white text-gray-600'}`}
-              >
-                {y}년
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-gray-400 mt-1.5">만기가 길수록 월 상환액이 줄고 대출 한도가 늘어요</p>
+        <div className="flabel" style={{ marginBottom: 8 }}>몇 년에 걸쳐 갚을까요?</div>
+        <div className="chips">
+          {[10, 20, 30, 40, 50].map(y => (
+            <Chip key={y} on={d.years === y} onClick={() => set('years', y)}>{y}년</Chip>
+          ))}
         </div>
       </div>
 
-      {/* 결과 */}
-      {loanLimit && (
-        <div className="space-y-3 pt-2">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">계산 결과</h3>
+      <div className="card">
+        <div className="sect">🧮 내 조건에 해당할 수 있는 상품</div>
+        <div className="flabel">{LOAN_LABELS[type]}</div>
+        <p className="fsub">{reason}</p>
 
-          {/* DSR 게이지 */}
-          {dsrRatio !== null && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600 font-medium">내 DSR 비율</span>
-                <span className={`font-bold ${dsrRatio > 40 ? 'text-red-500' : dsrRatio > 30 ? 'text-amber-500' : 'text-green-600'}`}>
-                  {dsrRatio}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                <div
-                  className={`h-3 rounded-full transition-all duration-500 ${dsrRatio > 40 ? 'bg-red-400' : dsrRatio > 30 ? 'bg-amber-400' : 'bg-green-400'}`}
-                  style={{ width: `${Math.min(dsrRatio, 100)}%` }}
-                />
-              </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>0%</span>
-                <span className="text-amber-500">한도 40%</span>
-                <span>100%</span>
-              </div>
-              <p className="text-xs text-gray-400 mt-2">
-                {dsrRatio <= 40
-                  ? `대출 한도 내에서 월 ${Math.round(monthlyPayment / 10000).toLocaleString()}만원 납부`
-                  : '소득 대비 상환액이 한도를 초과해요'}
-              </p>
-            </div>
-          )}
+        {type === 'didimdol' && (
+          <>
+            <div className="row"><span className="l">집값 기준 한도 (LTV 70%)</span><span className="r">{fmt(r.ltv)}</span></div>
+            <div className="row"><span className="l">디딤돌대출 한도</span><span className="r">{fmt(r.cap)}</span></div>
+          </>
+        )}
+        {type === 'bogeumjari' && (
+          <>
+            <div className="row"><span className="l">집값 기준 한도 (LTV {r.ltvPct}%)</span><span className="r">{fmt(r.ltv)}</span></div>
+            <div className="row"><span className="l">보금자리론 한도</span><span className="r">{fmt(r.cap)}</span></div>
+            <div className="row"><span className="l">소득 기준 한도 (DTI 60%)</span><span className="r">{r.dtiL > 0 ? fmt(r.dtiL) : '소득 입력 필요'}</span></div>
+          </>
+        )}
+        {type === 'general' && (
+          <>
+            <div className="row"><span className="l">집값 기준 한도 (LTV 70%)</span><span className="r">{fmt(r.ltv)}</span></div>
+            <div className="row"><span className="l">소득 기준 한도 (DSR 40%)</span><span className="r">{r.dsrL > 0 ? fmt(r.dsrL) : '소득 입력 필요'}</span></div>
+          </>
+        )}
 
-          <div className="grid grid-cols-1 gap-3">
-            {ltvLimit && (
-              <ResultCard
-                label={`집값 기준 한도 (LTV ${ltvLabel})`}
-                value={`${formatManWon(ltvLimit)}원`}
-              />
-            )}
-            {dsrLimit && (
-              <ResultCard
-                label={`소득 기준 한도 (DSR 40%, ${loanTerm}년)`}
-                value={`${formatManWon(dsrLimit)}원`}
-              />
-            )}
-            <ResultCard
-              label="최종 대출 한도 (둘 중 낮은 값)"
-              value={`${formatManWon(loanLimit)}원`}
-              highlight
-              sub="실제 은행 심사 결과와 다를 수 있어요"
-            />
+        <Verdict
+          ok={true}
+          label="대출 가능 금액"
+          amount={fmt(r.fin)}
+          sub={type === 'didimdol' ? `금리 ${r.rateLabel} (평균 ${r.rate}% 적용)` : `적용금리 ${r.rate}% 기준`}
+        />
+        <div className="row"><span className="l">예상 월 상환액</span><span className="r">{fmtW(monthly)}</span></div>
+
+        <button className="whybtn" style={{ marginTop: 12 }} onClick={() => setShowOverride(o => !o)}>이 조건이 아닌 것 같아요</button>
+        {showOverride && (
+          <div className="chips" style={{ marginTop: 10 }}>
+            {Object.entries(LOAN_LABELS).map(([key, label]) => (
+              <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
+            ))}
+            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 계산으로</Chip>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <button className="pbtn" onClick={() => { set('loan', r.fin); go(1) }}>이 금액으로 필요한 현금 계산하기</button>
+    </>
   )
 }
