@@ -1,16 +1,10 @@
 import { useApp } from '../../context/useApp'
 import { CHECKS, addDays, formatDateKo } from '../../utils/calc'
-import { downloadIcsEvent, downloadIcsAll } from '../../utils/ics'
+import { addToCalendar } from '../../utils/ics'
 
 export default function Step5Checklist() {
   const { d, set, toggleDone, go } = useApp()
   const hasDate = !!d.balanceDate
-
-  const allEvents = hasDate
-    ? CHECKS.flatMap(({ days: phaseDays, items }) =>
-        items.map(it => ({ title: it.text, date: addDays(d.balanceDate, it.days ?? phaseDays) }))
-      )
-    : []
 
   return (
     <>
@@ -24,9 +18,7 @@ export default function Step5Checklist() {
           />
         </div>
         {hasDate ? (
-          <button className="pbtn" onClick={() => downloadIcsAll(allEvents)}>
-            🗓️ 전체 일정 캘린더에 추가
-          </button>
+          <p className="fsub" style={{ marginBottom: 0 }}>각 항목의 📅를 누르면 그 일정만 캘린더에 추가할 수 있어요</p>
         ) : (
           <p className="fsub" style={{ marginBottom: 0 }}>잔금일을 입력하면 날짜가 자동으로 채워져요</p>
         )}
@@ -50,7 +42,7 @@ export default function Step5Checklist() {
                   )}
                 </span>
                 {date && (
-                  <button className="check-cal" onClick={() => downloadIcsEvent(it.text, date)} aria-label="캘린더에 추가">
+                  <button className="check-cal" onClick={() => addToCalendar(it.text, date)} aria-label="캘린더에 추가">
                     📅
                   </button>
                 )}
