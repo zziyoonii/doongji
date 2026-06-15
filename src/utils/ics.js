@@ -41,8 +41,28 @@ function toBase64(content) {
   return btoa(binary)
 }
 
+function toGcalDate(date) {
+  const next = new Date(date)
+  next.setDate(next.getDate() + 1)
+  return `${toIcsDate(date)}/${toIcsDate(next)}`
+}
+
+function gcalUrl({ title, date, details }) {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: toGcalDate(date),
+    details: details || '',
+  })
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
+function isTossApp() {
+  return typeof window !== 'undefined' && !!window.ReactNativeWebView
+}
+
 async function download(content, filename) {
-  if (typeof window !== 'undefined' && window.ReactNativeWebView) {
+  if (isTossApp()) {
     const { saveBase64Data } = await import('@apps-in-toss/web-framework')
     await saveBase64Data({
       data: toBase64(content),
@@ -63,11 +83,25 @@ async function download(content, filename) {
   URL.revokeObjectURL(url)
 }
 
-export function downloadIcsEvent(title, date) {
+export async function downloadIcsEvent(title, date) {
+  if (isTossApp()) {
+    const { openURL } = await import('@apps-in-toss/web-framework')
+    await openURL(gcalUrl({ title: `🪺 ${title}`, date }))
+    return
+  }
   return download(buildCalendar([buildEvent(title, date)]), `${title}.ics`)
 }
 
-export function downloadIcsAll(items) {
+export async function downloadIcsAll(items) {
+  if (isTossApp()) {
+    const { openURL } = await import('@apps-in-toss/web-framework')
+    const sorted = [...items].sort((a, b) => a.date - b.date)
+    const details = sorted
+      .map(({ title, date }) => `${date.getMonth() + 1}/${date.getDate()} - ${title}`)
+      .join('\n')
+    await openURL(gcalUrl({ title: '🪺 둥지 이사 일정', date: sorted[0].date, details }))
+    return
+  }
   const events = items.map(({ title, date }) => buildEvent(title, date))
   return download(buildCalendar(events), '둥지-이사일정.ics')
 }
