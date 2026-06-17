@@ -19,7 +19,7 @@ export default function Step1Loan() {
   return (
     <>
       <p className="intro">
-        🏠 둥지는 생애최초 주택 구매를 위한 계산 도구예요. 대출 한도와 잔금을 쉽게 계산하고, 금융 상품을 중개하거나 권유하지 않아요.
+        🏠 둥지는 생애최초 주택 구매를 위한 계산 도구예요. 대출 한도와 잔금을 쉽게 계산해드려요.
       </p>
 
       <div className="card">
