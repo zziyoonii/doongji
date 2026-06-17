@@ -18,11 +18,9 @@ export default function Step1Loan() {
 
   return (
     <>
-      <div className="intro">
-        <p><strong>둥지</strong>는 생애최초 주택 구매를 위한 계산 도구예요.</p>
-        <p>대출 한도·잔금·취득세를 쉽게 계산할 수 있어요.</p>
-        <p>금융 상품을 중개하거나 권유하지 않아요.</p>
-      </div>
+      <p className="intro">
+        둥지는 생애최초 주택 구매를 위한 계산 도구예요. 대출 한도와 잔금을 쉽게 계산하고, 금융 상품을 중개하거나 권유하지 않아요.
+      </p>
 
       <div className="card">
         <div className="sect">🏠 사려는 집부터 알려주세요</div>

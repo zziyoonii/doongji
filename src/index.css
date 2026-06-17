@@ -111,19 +111,10 @@ button:focus-visible {
 }
 
 .intro {
-  margin-bottom: 18px;
-}
-.intro p {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--ink-soft);
-  margin-bottom: 1px;
-}
-.intro p:first-child {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 4px;
+  margin-bottom: 18px;
 }
 
 .frow {
