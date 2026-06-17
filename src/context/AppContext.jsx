@@ -16,6 +16,7 @@ const initialD = {
     { id: 'agent', name: '중개수수료', a: 225 },
   ],
   isFirst: true, baby: 'none', benefits: ['first'], living: 100, months: 4, done: {}, balanceDate: '',
+  acqTax: 0, eduTax: 0,
 }
 
 export function AppProvider({ children }) {

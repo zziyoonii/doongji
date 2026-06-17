@@ -151,11 +151,3 @@ export function flow(d) {
   return { bal, gn, fees, have, diff: have + gn - bal - fees }
 }
 
-export function tax(d) {
-  const rate = d.price <= 60000 ? .01 : d.price <= 90000 ? .02 : .03
-  const acq = d.price * rate, edu = acq * .1, total = acq + edu
-  const fc = d.isFirst ? Math.min(total, 200) : 0
-  const bc = d.baby !== 'none' ? Math.min(total, 500) : 0
-  const best = Math.max(fc, bc)
-  return { rate, acq, edu, total, fc, bc, best, fin: Math.max(total - best, 0) }
-}
