@@ -18,9 +18,11 @@ export default function Step1Loan() {
 
   return (
     <>
-      <p className="fsub" style={{ marginBottom: 14, lineHeight: 1.7, whiteSpace: 'pre-line' }}>
-        {'둥지는 생애최초 주택 구매를 위한 계산 도구예요.\n대출 한도·잔금·취득세를 쉽게 계산할 수 있어요.\n금융 상품을 중개하거나 권유하지 않아요.'}
-      </p>
+      <div className="intro">
+        <p><strong>둥지</strong>는 생애최초 주택 구매를 위한 계산 도구예요.</p>
+        <p>대출 한도·잔금·취득세를 쉽게 계산할 수 있어요.</p>
+        <p>금융 상품을 중개하거나 권유하지 않아요.</p>
+      </div>
 
       <div className="card">
         <div className="sect">🏠 사려는 집부터 알려주세요</div>
