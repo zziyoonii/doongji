@@ -104,18 +104,18 @@ export const LOAN_LABELS = {
   general: '일반 주택담보대출',
 }
 
-export const BOGEUMJARI_INCOME_LIMIT = 8500 // 부부합산 연소득 기준 (만원)
-export const BOGEUMJARI_INCOME_LIMIT_MULTICHILD = 10000 // 다자녀 가구는 소득 기준 완화 (만원)
+export const BOGEUMJARI_INCOME_LIMIT = 7000 // 부부합산 연소득 기준 (만원) — 일반 보금자리론 기준
+export const BOGEUMJARI_PRICE_LIMIT = 60000 // 주택가격 기준 (만원) — 일반 보금자리론 기준
 
-function bogeumjariIncomeLimit(d) {
-  return d.multichild ? BOGEUMJARI_INCOME_LIMIT_MULTICHILD : BOGEUMJARI_INCOME_LIMIT
+function bogeumjariIncomeLimit() {
+  return BOGEUMJARI_INCOME_LIMIT
 }
 
 // 집값·소득·가구 조건에 따라 해당될 수 있는 대출 상품을 계산
 export function recommendLoanType(d) {
   if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
   if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'
-  if (d.price <= 90000 && d.income <= bogeumjariIncomeLimit(d)) return 'bogeumjari'
+  if (d.price <= BOGEUMJARI_PRICE_LIMIT && d.income <= bogeumjariIncomeLimit()) return 'bogeumjari'
   return 'general'
 }
 
@@ -127,8 +127,8 @@ export function loanReason(type, d) {
     return '신혼·다자녀 가구는 집값 6억원 이하면 디딤돌대출 한도가 늘어나요 🎉'
   }
   if (type === 'bogeumjari') return 'HF 보금자리론 기준으로 계산했어요'
-  if (d.price > 90000) return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
-  return `부부합산 연소득이 ${bogeumjariIncomeLimit(d).toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
+  if (d.price > BOGEUMJARI_PRICE_LIMIT) return `집값이 ${(BOGEUMJARI_PRICE_LIMIT / 10000)}억원을 초과해 일반 주택담보대출 기준으로 계산했어요`
+  return `부부합산 연소득이 ${bogeumjariIncomeLimit().toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
 }
 
 export function didimdolLimit(d) {
@@ -140,7 +140,7 @@ export function didimdolLimit(d) {
 
 export function bogeumjariLimit(d) {
   const rate = BOGEUMJARI_RATES[d.years]
-  const ltvPct = .7 // 아파트 기준 최대 70% (기타주택 65%, 규제지역 차감은 미반영)
+  const ltvPct = d.isFirst ? .8 : .7 // 생애최초 보금자리론은 최대 80% (수도권·규제지역은 70%, 미반영), 일반은 최대 70%
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
   const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
   const mm = (d.income / 12) * .6 - d.existingMonthly
