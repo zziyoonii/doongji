@@ -1,10 +1,11 @@
 import { useApp } from '../../context/useApp'
-import { CHECKS, addDays, formatDateKo } from '../../utils/calc'
+import { CHECKS, addDays, formatDateKo, fmt } from '../../utils/calc'
 import { addToCalendar } from '../../utils/ics'
 
 export default function Step5Checklist() {
   const { d, set, toggleDone, go } = useApp()
   const hasDate = !!d.balanceDate
+  const bondFee = d.fees.find(f => f.id === 'bond')?.a || 0
 
   return (
     <>
@@ -29,20 +30,21 @@ export default function Step5Checklist() {
           <div className="sect">🪺 {phase}</div>
           {items.map(it => {
             const date = hasDate ? addDays(d.balanceDate, it.days ?? phaseDays) : null
+            const text = it.id === 'bondFee' ? `${it.text} (${fmt(bondFee)} 여유있게)` : it.text
             return (
               <div key={it.text} className={`check ${d.done[it.text] ? 'done' : ''}`}>
                 <button className="check-toggle" onClick={() => toggleDone(it.text)}>
                   <span>{d.done[it.text] ? '✅' : '⬜'}</span>
                 </button>
                 <span className="check-body">
-                  <span className="check-text" style={{ lineHeight: 1.5 }}>{it.text}</span>
+                  <span className="check-text" style={{ lineHeight: 1.5 }}>{text}</span>
                   {date && <span className="check-due">{formatDateKo(date)}까지</span>}
                   {it.link && (
                     <a className="check-link" href={it.link} target="_blank" rel="noreferrer">{it.linkLabel}</a>
                   )}
                 </span>
                 {date && (
-                  <button className="check-cal" onClick={() => addToCalendar(it.text, date)} aria-label="캘린더에 추가">
+                  <button className="check-cal" onClick={() => addToCalendar(text, date)} aria-label="캘린더에 추가">
                     📅
                   </button>
                 )}

@@ -35,7 +35,7 @@ export const CHECKS = [
   },
   {
     phase: 'D-1', days: -1, items: [
-      { text: '인지대+채권 비용 은행 계좌 입금 (65만원 여유있게)' },
+      { text: '인지대+채권 비용 은행 계좌 입금', id: 'bondFee' },
       { text: '법무사에게 카드 납부 의사 전달' },
       { text: '법무사 보수료 준비 확인' },
     ],
