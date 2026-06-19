@@ -98,11 +98,13 @@ export const LOAN_LABELS = {
   general: '일반 주택담보대출',
 }
 
+export const BOGEUMJARI_INCOME_LIMIT = 8500 // 부부합산 연소득 기준 (만원)
+
 // 집값·소득·가구 조건에 따라 해당될 수 있는 대출 상품을 계산
 export function recommendLoanType(d) {
   if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
   if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'
-  if (d.price <= 90000) return 'bogeumjari'
+  if (d.price <= 90000 && d.income <= BOGEUMJARI_INCOME_LIMIT) return 'bogeumjari'
   return 'general'
 }
 
@@ -114,7 +116,8 @@ export function loanReason(type, d) {
     return '신혼·다자녀 가구는 집값 6억원 이하면 디딤돌대출 한도가 늘어나요 🎉'
   }
   if (type === 'bogeumjari') return 'HF 보금자리론 기준으로 계산했어요'
-  return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
+  if (d.price > 90000) return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
+  return `부부합산 연소득이 ${BOGEUMJARI_INCOME_LIMIT.toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
 }
 
 export function didimdolLimit(d) {
@@ -128,7 +131,7 @@ export function bogeumjariLimit(d) {
   const rate = RATES[d.years]
   const ltvPct = d.isFirst ? .8 : .7
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
-  const cap = d.isFirst ? 42000 : 36000
+  const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
   const mm = (d.income / 12) * .6 - d.existingMonthly
   const dtiL = annuityLimit(mm, rate, d.years)
   const fin = Math.max(Math.min(ltv, cap, dtiL), 0)
