@@ -6,12 +6,15 @@ export const RATES = { 10: 4.35, 15: 4.4, 20: 4.45, 30: 4.55, 40: 4.6, 50: 4.65 
 // HF 보금자리론 기본금리 (만기별 차등, 연 4.60~4.90% — 한국주택금융공사 고시 기준)
 export const BOGEUMJARI_RATES = { 10: 4.6, 15: 4.65, 20: 4.7, 30: 4.75, 40: 4.85, 50: 4.9 }
 
+// HF 보금자리론 우대금리 고시 기준 (최대 1.0%p, 신혼가구·신생아출산가구는 중복 불가)
 export const DISCOUNTS = [
-  { id: 'youth', n: '저소득 청년', ds: '만 39세 이하, 연소득 6천만원 이하', r: .5 },
-  { id: 'newlywed', n: '신혼가구', ds: '혼인 7년 이내 또는 3개월 내 예정', r: .2 },
-  { id: 'social', n: '사회적 배려층', ds: '장애인, 한부모 가정 등', r: .5 },
-  { id: 'multichild', n: '다자녀 가구', ds: '2자녀 이상', r: .3 },
-  { id: 'first', n: '생애최초 구입', ds: '본인·배우자 주택 소유 이력 없음', r: .2 },
+  { id: 'youth', n: '저소득 청년', ds: '만 39세 이하, 연소득 6천만원 이하', r: .1 },
+  { id: 'newlywed', n: '신혼가구', ds: '혼인 7년 이내 또는 3개월 내 예정 · 신생아출산가구와 중복 불가', r: .3, exclusiveWith: 'baby' },
+  { id: 'baby', n: '신생아출산가구', ds: '신혼가구와 중복 불가', r: .2, exclusiveWith: 'newlywed' },
+  { id: 'social', n: '사회적 배려층', ds: '한부모·장애인·다문화 가구 (항목별, 최대 2종목 중복 가능)', r: .7 },
+  { id: 'multichild', n: '다자녀 가구', ds: '2자녀 0.5%p, 3자녀 이상 0.7%p', r: .5 },
+  { id: 'green', n: '녹색건축물', ds: '에너지효율 인증 주택', r: .1 },
+  { id: 'unsold', n: '미분양관리지역 입주', ds: '미분양관리지역 내 미분양주택', r: .2 },
   { id: 'fraud', n: '전세사기 피해자', ds: '피해자 결정문 보유', r: 1 },
 ]
 
@@ -137,7 +140,7 @@ export function didimdolLimit(d) {
 
 export function bogeumjariLimit(d) {
   const rate = BOGEUMJARI_RATES[d.years]
-  const ltvPct = d.isFirst ? .8 : .7
+  const ltvPct = .7 // 아파트 기준 최대 70% (기타주택 65%, 규제지역 차감은 미반영)
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
   const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
   const mm = (d.income / 12) * .6 - d.existingMonthly

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { AppContext } from './context'
+import { DISCOUNTS } from '../utils/calc'
 
 const STATE_KEY = 'dungi-state-v2'
 const STEP_KEY = 'dungi-step-v1'
@@ -15,7 +16,7 @@ const initialD = {
     { id: 'move', name: '이사비', a: 120 },
     { id: 'agent', name: '중개수수료', a: 225 },
   ],
-  isFirst: true, baby: 'none', benefits: ['first'], living: 100, months: 4, done: {}, balanceDate: '',
+  isFirst: true, baby: 'none', benefits: [], living: 100, months: 4, done: {}, balanceDate: '',
   acqTax: 0, eduTax: 0,
 }
 
@@ -51,10 +52,14 @@ export function AppProvider({ children }) {
     fees: prev.fees.map((f, idx) => idx === i ? { ...f, a: value } : f),
   }))
 
-  const toggleBenefit = id => setD(prev => ({
-    ...prev,
-    benefits: prev.benefits.includes(id) ? prev.benefits.filter(x => x !== id) : [...prev.benefits, id],
-  }))
+  const toggleBenefit = id => setD(prev => {
+    if (prev.benefits.includes(id)) {
+      return { ...prev, benefits: prev.benefits.filter(x => x !== id) }
+    }
+    const exclusiveWith = DISCOUNTS.find(b => b.id === id)?.exclusiveWith
+    const next = exclusiveWith ? prev.benefits.filter(x => x !== exclusiveWith) : prev.benefits
+    return { ...prev, benefits: [...next, id] }
+  })
 
   const toggleDone = item => setD(prev => ({
     ...prev,
