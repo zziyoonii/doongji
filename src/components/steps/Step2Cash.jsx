@@ -34,11 +34,7 @@ export default function Step2Cash() {
         {d.fees.map((f, i) => (
           <div key={f.id}>
             {f.why && <WhyToggle q={`${f.name}이 뭐예요?`}>{f.why}</WhyToggle>}
-            <div className="flabel">{f.name}</div>
-            <div className="frow">
-              <input type="number" value={f.a || ''} onChange={e => setFee(i, +e.target.value || 0)} />
-              <span>만원</span>
-            </div>
+            <Field label={f.name} unit="만원" value={f.a} onChange={v => setFee(i, v)} />
           </div>
         ))}
       </div>
