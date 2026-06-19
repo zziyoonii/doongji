@@ -1,13 +1,17 @@
 import { useApp } from '../../context/useApp'
-import { RATES, DISCOUNTS, mpay, fmtW } from '../../utils/calc'
+import { DISCOUNTS, mpay, fmtW, recommendLoanType, loanLimit, LOAN_LABELS } from '../../utils/calc'
 import Field from '../ui/Field'
 import Verdict from '../ui/Verdict'
 import PlusLock from '../ui/PlusLock'
 
 export default function Step4Monthly() {
   const { d, set, toggleBenefit, go } = useApp()
-  const base = RATES[d.years]
-  const cut = Math.min(d.benefits.reduce((a, id) => a + (DISCOUNTS.find(x => x.id === id)?.r || 0), 0), 1)
+  const type = d.loanTypeOverride || recommendLoanType(d)
+  const isPolicyLoan = type === 'didimdol' || type === 'bogeumjari'
+  const base = loanLimit(type, d).rate
+  const cut = isPolicyLoan
+    ? Math.min(d.benefits.reduce((a, id) => a + (DISCOUNTS.find(x => x.id === id)?.r || 0), 0), 1)
+    : 0
   const rt = +(base - cut).toFixed(2)
   const m = mpay(d.loan, rt, d.years)
   const inc = d.netIncome * 1e4
@@ -16,8 +20,13 @@ export default function Step4Monthly() {
   const result = (
     <div className="card">
       <div className="sect">📅 매달 살림 미리보기</div>
-      <div className="row"><span className="l">적용금리 (기본 {base}% − 우대 {cut.toFixed(1)}%p)</span><span className="r">{rt}%</span></div>
-      <div className="row"><span className="l">보금자리론 월 상환</span><span className="r minus">- {fmtW(m)}</span></div>
+      <div className="row">
+        <span className="l">
+          {isPolicyLoan ? `적용금리 (기본 ${base}% − 우대 ${cut.toFixed(1)}%p)` : `적용금리 (기본 ${base}% 기준)`}
+        </span>
+        <span className="r">{rt}%</span>
+      </div>
+      <div className="row"><span className="l">{LOAN_LABELS[type]} 월 상환</span><span className="r minus">- {fmtW(m)}</span></div>
       <div className="row"><span className="l">생활비</span><span className="r minus">- {fmtW(d.living * 1e4)}</span></div>
       {d.existingMonthly > 0 && (
         <div className="row"><span className="l">기존 대출</span><span className="r minus">- {fmtW(d.existingMonthly * 1e4)}</span></div>
@@ -36,20 +45,26 @@ export default function Step4Monthly() {
     <>
       <div className="card">
         <div className="sect">📉 우대금리 챙기기</div>
-        <p className="fsub">해당하는 것 모두 선택 — 최대 1.0%p까지 깎여요</p>
-        {DISCOUNTS.map(b => {
-          const on = d.benefits.includes(b.id)
-          return (
-            <button key={b.id} className={`benefit ${on ? 'on' : ''}`} onClick={() => toggleBenefit(b.id)}>
-              <span>{on ? '✅' : '⬜'}</span>
-              <span style={{ flex: 1 }}>
-                <span className="bn">{b.n}</span>
-                <span className="bd">{b.ds}</span>
-              </span>
-              <span className="br">-{b.r}%p</span>
-            </button>
-          )
-        })}
+        {isPolicyLoan ? (
+          <>
+            <p className="fsub">해당하는 것 모두 선택 — 최대 1.0%p까지 깎여요</p>
+            {DISCOUNTS.map(b => {
+              const on = d.benefits.includes(b.id)
+              return (
+                <button key={b.id} className={`benefit ${on ? 'on' : ''}`} onClick={() => toggleBenefit(b.id)}>
+                  <span>{on ? '✅' : '⬜'}</span>
+                  <span style={{ flex: 1 }}>
+                    <span className="bn">{b.n}</span>
+                    <span className="bd">{b.ds}</span>
+                  </span>
+                  <span className="br">-{b.r}%p</span>
+                </button>
+              )
+            })}
+          </>
+        ) : (
+          <p className="fsub">일반 주택담보대출은 정부 우대금리 혜택이 적용되지 않아요. 은행별 자체 우대 조건은 따로 상담받아보세요</p>
+        )}
         <Field label="월 실수령액 (세후)" sub="월급에서 세금·보험 떼고 받는 금액 · (실제 통장에 들어오는 금액)" unit="만원/월" value={d.netIncome} onChange={v => set('netIncome', v)} />
         <Field label="한 달 생활비" sub="식비·교통·통신 등" unit="만원" value={d.living} onChange={v => set('living', v)} />
       </div>

@@ -3,6 +3,9 @@ export const STEP_SHORT = ['대출', '현금', '세금', '월납', '체크']
 
 export const RATES = { 10: 4.35, 15: 4.4, 20: 4.45, 30: 4.55, 40: 4.6, 50: 4.65 }
 
+// HF 보금자리론 기본금리 (만기별 차등, 연 4.60~4.90% — 한국주택금융공사 고시 기준)
+export const BOGEUMJARI_RATES = { 10: 4.6, 15: 4.65, 20: 4.7, 30: 4.75, 40: 4.85, 50: 4.9 }
+
 export const DISCOUNTS = [
   { id: 'youth', n: '저소득 청년', ds: '만 39세 이하, 연소득 6천만원 이하', r: .5 },
   { id: 'newlywed', n: '신혼가구', ds: '혼인 7년 이내 또는 3개월 내 예정', r: .2 },
@@ -99,12 +102,17 @@ export const LOAN_LABELS = {
 }
 
 export const BOGEUMJARI_INCOME_LIMIT = 8500 // 부부합산 연소득 기준 (만원)
+export const BOGEUMJARI_INCOME_LIMIT_MULTICHILD = 10000 // 다자녀 가구는 소득 기준 완화 (만원)
+
+function bogeumjariIncomeLimit(d) {
+  return d.multichild ? BOGEUMJARI_INCOME_LIMIT_MULTICHILD : BOGEUMJARI_INCOME_LIMIT
+}
 
 // 집값·소득·가구 조건에 따라 해당될 수 있는 대출 상품을 계산
 export function recommendLoanType(d) {
   if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
   if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'
-  if (d.price <= 90000 && d.income <= BOGEUMJARI_INCOME_LIMIT) return 'bogeumjari'
+  if (d.price <= 90000 && d.income <= bogeumjariIncomeLimit(d)) return 'bogeumjari'
   return 'general'
 }
 
@@ -117,7 +125,7 @@ export function loanReason(type, d) {
   }
   if (type === 'bogeumjari') return 'HF 보금자리론 기준으로 계산했어요'
   if (d.price > 90000) return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
-  return `부부합산 연소득이 ${BOGEUMJARI_INCOME_LIMIT.toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
+  return `부부합산 연소득이 ${bogeumjariIncomeLimit(d).toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
 }
 
 export function didimdolLimit(d) {
@@ -128,7 +136,7 @@ export function didimdolLimit(d) {
 }
 
 export function bogeumjariLimit(d) {
-  const rate = RATES[d.years]
+  const rate = BOGEUMJARI_RATES[d.years]
   const ltvPct = d.isFirst ? .8 : .7
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
   const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
