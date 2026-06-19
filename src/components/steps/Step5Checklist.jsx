@@ -1,11 +1,12 @@
 import { useApp } from '../../context/useApp'
-import { CHECKS, addDays, formatDateKo, fmt } from '../../utils/calc'
+import { CHECKS, addDays, formatDateKo, fmt, recommendLoanType } from '../../utils/calc'
 import { addToCalendar } from '../../utils/ics'
 
 export default function Step5Checklist() {
   const { d, set, toggleDone, go } = useApp()
   const hasDate = !!d.balanceDate
   const bondFee = d.fees.find(f => f.id === 'bond')?.a || 0
+  const loanType = d.loanTypeOverride || recommendLoanType(d)
 
   return (
     <>
@@ -28,9 +29,10 @@ export default function Step5Checklist() {
       {CHECKS.map(({ phase, days: phaseDays, items }) => (
         <div className="card" key={phase}>
           <div className="sect">🪺 {phase}</div>
-          {items.map(it => {
+          {items.filter(it => !it.onlyTypes || it.onlyTypes.includes(loanType)).map(it => {
             const date = hasDate ? addDays(d.balanceDate, it.days ?? phaseDays) : null
-            const text = it.id === 'bondFee' ? `${it.text} (${fmt(bondFee)} 여유있게)` : it.text
+            const baseText = it.textByType?.[loanType] || it.text
+            const text = it.id === 'bondFee' ? `${baseText} (${fmt(bondFee)} 여유있게)` : baseText
             return (
               <div key={it.text} className={`check ${d.done[it.text] ? 'done' : ''}`}>
                 <button className="check-toggle" onClick={() => toggleDone(it.text)}>

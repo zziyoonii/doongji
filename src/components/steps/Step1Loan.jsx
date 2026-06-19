@@ -51,6 +51,19 @@ export default function Step1Loan() {
         <div className="flabel">{LOAN_LABELS[type]}</div>
         <p className="fsub">{reason}</p>
 
+        <button className="override-toggle" onClick={() => setShowOverride(o => !o)}>
+          <span>🔄 이 조건이 아닌 것 같아요</span>
+          <span style={{ marginLeft: 'auto' }}>{showOverride ? '▲' : '▼'}</span>
+        </button>
+        {showOverride && (
+          <div className="chips" style={{ marginTop: 10, marginBottom: 14 }}>
+            {Object.entries(LOAN_LABELS).map(([key, label]) => (
+              <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
+            ))}
+            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 계산으로</Chip>
+          </div>
+        )}
+
         {type === 'didimdol' && (
           <>
             <div className="row"><span className="l">집값 기준 한도 (LTV 70%)</span><span className="r">{fmt(r.ltv)}</span></div>
@@ -78,16 +91,6 @@ export default function Step1Loan() {
           sub={type === 'didimdol' ? `금리 ${r.rateLabel} (평균 ${r.rate}% 적용)` : `적용금리 ${r.rate}% 기준`}
         />
         <div className="row"><span className="l">예상 월 상환액</span><span className="r">{fmtW(monthly)}</span></div>
-
-        <button className="whybtn" style={{ marginTop: 12 }} onClick={() => setShowOverride(o => !o)}>이 조건이 아닌 것 같아요</button>
-        {showOverride && (
-          <div className="chips" style={{ marginTop: 10 }}>
-            {Object.entries(LOAN_LABELS).map(([key, label]) => (
-              <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
-            ))}
-            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 계산으로</Chip>
-          </div>
-        )}
       </div>
 
       <button className="pbtn" onClick={() => { set('loan', r.fin); go(1) }}>이 금액으로 필요한 현금 계산하기</button>

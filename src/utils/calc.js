@@ -15,8 +15,15 @@ export const DISCOUNTS = [
 export const CHECKS = [
   {
     phase: '대출 준비 시작', days: -60, items: [
-      { text: '디딤돌/보금자리론 신청 시작 (심사까지 2~3주 소요)' },
-      { text: '주택금융공사 예상대출조회 확인', link: 'https://www.hf.go.kr', linkLabel: 'HF 예상대출조회 바로가기' },
+      {
+        text: '디딤돌/보금자리론 신청 시작 (심사까지 2~3주 소요)',
+        textByType: { general: '주택담보대출 신청 시작 (은행 방문 또는 비대면, 심사까지 1~2주 소요)' },
+      },
+      {
+        text: '주택금융공사 예상대출조회 확인', link: 'https://www.hf.go.kr', linkLabel: 'HF 예상대출조회 바로가기',
+        onlyTypes: ['didimdol', 'bogeumjari'],
+      },
+      { text: '대출받을 은행 방문해 한도·금리 비교 상담', onlyTypes: ['general'] },
     ],
   },
   {

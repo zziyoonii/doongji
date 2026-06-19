@@ -139,6 +139,24 @@ button:focus-visible {
   margin-bottom: 10px;
 }
 
+.override-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--rs);
+  padding: 11px 14px;
+  margin: 12px 0 4px;
+}
+
+.override-toggle:active {
+  background: var(--bg);
+}
+
 .whybox {
   display: none;
   font-size: 13.5px;
