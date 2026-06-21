@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../../context/useApp'
-import { recommendLoanType, loanLimit, loanReason, LOAN_LABELS, mpay, fmt, fmtW } from '../../utils/calc'
+import { recommendLoanType, loanLimit, loanReason, bogeumjariYearAllowed, LOAN_LABELS, mpay, fmt, fmtW } from '../../utils/calc'
 import Field from '../ui/Field'
 import WhyToggle from '../ui/WhyToggle'
 import Verdict from '../ui/Verdict'
@@ -16,6 +16,19 @@ export default function Step1Loan() {
   const monthly = mpay(r.fin, r.rate, d.years)
   const reason = d.loanTypeOverride ? '직접 선택한 상품 기준으로 계산했어요' : loanReason(type, d)
 
+  const adjustYearsFor = next => {
+    const t = d.loanTypeOverride || recommendLoanType(next)
+    if (t === 'bogeumjari' && !bogeumjariYearAllowed(next, d.years)) {
+      set('years', bogeumjariYearAllowed(next, 40) ? 40 : 30)
+    }
+  }
+  const onAgeChange = v => { set('age', v); adjustYearsFor({ ...d, age: v }) }
+  const onNewlywedClick = () => {
+    const next = { ...d, newlywed: !d.newlywed }
+    set('newlywed', next.newlywed)
+    adjustYearsFor(next)
+  }
+
   return (
     <>
       <p className="intro">
@@ -30,11 +43,12 @@ export default function Step1Loan() {
         </WhyToggle>
         <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
         <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} />
+        <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기 신청 가능 여부에 영향을 줘요" unit="세" value={d.age} onChange={onAgeChange} />
 
         <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>
         <div className="chips">
           <Chip on={d.isFirst} onClick={() => set('isFirst', !d.isFirst)}>생애최초 구입</Chip>
-          <Chip on={d.newlywed} onClick={() => set('newlywed', !d.newlywed)}>신혼부부예요</Chip>
+          <Chip on={d.newlywed} onClick={onNewlywedClick}>신혼부부예요</Chip>
           <Chip on={d.multichild} onClick={() => set('multichild', !d.multichild)}>2자녀 이상이에요</Chip>
           <Chip on={d.regulatedArea} onClick={() => set('regulatedArea', !d.regulatedArea)}>수도권·규제지역 주택</Chip>
         </div>
@@ -44,10 +58,16 @@ export default function Step1Loan() {
 
         <div className="flabel" style={{ marginBottom: 8 }}>몇 년에 걸쳐 갚을까요?</div>
         <div className="chips">
-          {[10, 20, 30, 40, 50].map(y => (
-            <Chip key={y} on={d.years === y} onClick={() => set('years', y)}>{y}년</Chip>
-          ))}
+          {[10, 20, 30, 40, 50].map(y => {
+            const disabled = type === 'bogeumjari' && !bogeumjariYearAllowed(d, y)
+            return (
+              <Chip key={y} on={d.years === y} disabled={disabled} onClick={() => set('years', y)}>{y}년</Chip>
+            )
+          })}
         </div>
+        {type === 'bogeumjari' && (!bogeumjariYearAllowed(d, 40) || !bogeumjariYearAllowed(d, 50)) && (
+          <p className="fsub">40·50년 만기는 만 39세·34세 이하(신혼가구는 예외)만 신청할 수 있어요</p>
+        )}
       </div>
 
       <div className="card">

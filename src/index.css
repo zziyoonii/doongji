@@ -196,6 +196,10 @@ button:focus-visible {
   font-weight: 600;
 }
 
+.chip.disabled {
+  opacity: .4;
+}
+
 .row {
   display: flex;
   justify-content: space-between;
