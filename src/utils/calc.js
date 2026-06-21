@@ -152,8 +152,12 @@ export function didimdolLimit(d) {
 
 export function bogeumjariLimit(d) {
   const rate = BOGEUMJARI_RATES[d.years]
-  // 생애최초는 일반 차감 예외 대상이라 자체 한도(80%/규제지역 70%)만 적용, 그 외엔 규제지역 10%p 차감
-  const ltvPct = d.isFirst ? (d.regulatedArea ? .7 : .8) : (d.regulatedArea ? .6 : .7)
+  // 생애최초는 주택 유형 무관 80%(규제지역 70%)만 적용. 일반은 아파트 70%/기타주택 65%, 규제지역 10%p 차감
+  const ltvPct = d.isFirst
+    ? (d.regulatedArea ? .7 : .8)
+    : d.houseType === 'other'
+      ? (d.regulatedArea ? .55 : .65)
+      : (d.regulatedArea ? .6 : .7)
   const dtiPct = d.isFirst ? .6 : (d.regulatedArea ? .5 : .6)
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
   const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
