@@ -107,13 +107,16 @@ export const LOAN_LABELS = {
 export const BOGEUMJARI_INCOME_LIMIT = 7000 // 부부합산 연소득 기준 (만원) — 일반 보금자리론 기준
 export const BOGEUMJARI_PRICE_LIMIT = 60000 // 주택가격 기준 (만원) — 일반 보금자리론 기준
 
-// 보금자리론 40·50년 만기 신청 연령 제한 (신혼가구는 예외)
-export const BOGEUMJARI_AGE_LIMIT = { 40: 39, 50: 34 }
+// 보금자리론 40·50년 만기 신청 연령 제한 (만 OO세 미만, 신혼가구는 기준 완화)
+export const BOGEUMJARI_AGE_LIMIT = {
+  40: { normal: 40, newlywed: 50 },
+  50: { normal: 35, newlywed: 40 },
+}
 
 export function bogeumjariYearAllowed(d, years) {
   const limit = BOGEUMJARI_AGE_LIMIT[years]
   if (!limit) return true
-  return d.newlywed || d.age <= limit
+  return d.age < (d.newlywed ? limit.newlywed : limit.normal)
 }
 
 function bogeumjariIncomeLimit() {

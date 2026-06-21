@@ -43,7 +43,7 @@ export default function Step1Loan() {
         </WhyToggle>
         <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
         <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} />
-        <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기 신청 가능 여부에 영향을 줘요" unit="세" value={d.age} onChange={onAgeChange} />
+        <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기는 나이 제한이 있어요 (신혼가구는 완화)" unit="세" value={d.age} onChange={onAgeChange} />
 
         <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>
         <div className="chips">
@@ -58,7 +58,7 @@ export default function Step1Loan() {
 
         <div className="flabel" style={{ marginBottom: 8 }}>몇 년에 걸쳐 갚을까요?</div>
         <div className="chips">
-          {[10, 20, 30, 40, 50].map(y => {
+          {[10, 15, 20, 30, 40, 50].map(y => {
             const disabled = type === 'bogeumjari' && !bogeumjariYearAllowed(d, y)
             return (
               <Chip key={y} on={d.years === y} disabled={disabled} onClick={() => set('years', y)}>{y}년</Chip>
@@ -66,7 +66,7 @@ export default function Step1Loan() {
           })}
         </div>
         {type === 'bogeumjari' && (!bogeumjariYearAllowed(d, 40) || !bogeumjariYearAllowed(d, 50)) && (
-          <p className="fsub">40·50년 만기는 만 39세·34세 이하(신혼가구는 예외)만 신청할 수 있어요</p>
+          <p className="fsub">40년 만기는 만 40세 미만(신혼가구 50세 미만), 50년 만기는 만 35세 미만(신혼가구 40세 미만)만 신청할 수 있어요</p>
         )}
       </div>
 
