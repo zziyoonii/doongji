@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: "둥지",
     primaryColor: "#F59E0B",
-    icon: "",
+    icon: "https://static.toss.im/appsintoss/49209/09fd5c70-4e06-4e56-97a2-f6d2625769c5.png",
   },
   web: {
     host: "localhost",
