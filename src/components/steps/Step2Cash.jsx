@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { Analytics } from '@apps-in-toss/web-framework'
 import { useApp } from '../../context/useApp'
 import { flow, fmt } from '../../utils/calc'
 import Field from '../ui/Field'
@@ -7,6 +9,10 @@ import Verdict from '../ui/Verdict'
 export default function Step2Cash() {
   const { d, set, setFee, go } = useApp()
   const r = flow(d)
+
+  useEffect(() => {
+    Analytics.screen({ log_name: 'balance_calc_complete' })
+  }, [])
 
   return (
     <>

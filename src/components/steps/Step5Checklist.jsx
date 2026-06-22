@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { Analytics } from '@apps-in-toss/web-framework'
 import { useApp } from '../../context/useApp'
 import { CHECKS, addDays, formatDateKo, fmt, recommendLoanType } from '../../utils/calc'
 import { addToCalendar } from '../../utils/ics'
@@ -7,6 +9,15 @@ export default function Step5Checklist() {
   const hasDate = !!d.balanceDate
   const bondFee = d.fees.find(f => f.id === 'bond')?.a || 0
   const loanType = d.loanTypeOverride || recommendLoanType(d)
+
+  useEffect(() => {
+    Analytics.screen({ log_name: 'checklist_viewed' })
+  }, [])
+
+  const onToggleDone = item => {
+    toggleDone(item)
+    Analytics.click({ log_name: 'checklist_item_checked' })
+  }
 
   return (
     <>
@@ -35,7 +46,7 @@ export default function Step5Checklist() {
             const text = it.id === 'bondFee' ? `${baseText} (${fmt(bondFee)} 여유있게)` : baseText
             return (
               <div key={it.text} className={`check ${d.done[it.text] ? 'done' : ''}`}>
-                <button className="check-toggle" onClick={() => toggleDone(it.text)}>
+                <button className="check-toggle" onClick={() => onToggleDone(it.text)}>
                   <span>{d.done[it.text] ? '✅' : '⬜'}</span>
                 </button>
                 <span className="check-body">
