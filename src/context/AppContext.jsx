@@ -6,9 +6,9 @@ const STATE_KEY = 'dungi-state-v2'
 const STEP_KEY = 'dungi-step-v1'
 
 const initialD = {
-  price: 53500, income: 4000, netIncome: 280, existingMonthly: 0, years: 40, loan: 0, age: 32,
+  price: 0, income: 0, netIncome: 0, existingMonthly: 0, years: 40, loan: 0, age: 0,
   newlywed: false, multichild: false, regulatedArea: false, houseType: 'apt', loanTypeOverride: null,
-  deposit: 5350, guarantee: 5900, oldLoan: 2250, cash: 7400, stock: 58, borrow: 0,
+  deposit: 0, guarantee: 0, oldLoan: 0, cash: 0, stock: 0, borrow: 0,
   fees: [
     { id: 'legal', name: '법무사 보수료', a: 30 },
     { id: 'bond', name: '인지대 + 국민주택채권', a: 65, why: '인지대는 계약서에 붙는 세금, 채권은 의무 매입 후 바로 할인 매도해서 실제론 할인 비용만 내요. 합쳐서 50~100만원 정도예요.' },
@@ -16,7 +16,7 @@ const initialD = {
     { id: 'move', name: '이사비', a: 120 },
     { id: 'agent', name: '중개수수료', a: 225 },
   ],
-  isFirst: true, baby: 'none', benefits: [], living: 100, months: 4, done: {}, balanceDate: '',
+  isFirst: true, baby: 'none', benefits: [], living: 0, months: 4, done: {}, balanceDate: '',
   acqTax: 0, eduTax: 0,
 }
 
