@@ -55,14 +55,6 @@ export default function App() {
         <p>이 앱은 참고용 계산 도구예요. 금융 상품을 중개하거나 권유하지 않아요.<br />실제 대출 가능 여부는 해당 기관에서 확인하세요.</p>
         <div className="app-footer" style={{ marginTop: 12, display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span>Made by <strong style={{ color: 'var(--ink)' }}>김지윤 (Qoo)</strong></span>
-          <span>·</span>
-          <a href="https://jiyoonportfolio.vercel.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
-          <span>·</span>
-          <a href="https://github.com/zziyoonii" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <span>·</span>
-          <a href="https://www.linkedin.com/in/aroundjiyoon/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <span>·</span>
-          <a href="https://npm-run-ops.tistory.com/" target="_blank" rel="noopener noreferrer">Blog</a>
         </div>
       </footer>
 
