@@ -8,7 +8,8 @@ import Chip from '../ui/Chip'
 
 export default function Step1Loan() {
   const { d, set, go } = useApp()
-  const [showOverride, setShowOverride] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
+  const missingInput = d.price <= 0 || d.income <= 0
 
   const autoType = recommendLoanType(d)
   const type = d.loanTypeOverride || autoType
@@ -37,13 +38,13 @@ export default function Step1Loan() {
 
       <div className="card">
         <div className="sect">🏠 사려는 집부터 알려주세요</div>
-        <Field label="집값이 얼마예요?" sub="계약하려는 집의 매매가" unit="만원" value={d.price} onChange={v => set('price', v)} />
+        <Field label="집값이 얼마예요?" sub="계약하려는 집의 매매가" unit="만원" value={d.price} onChange={v => set('price', v)} placeholder="35000" />
+        <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} placeholder="6000" />
         <WhyToggle q="소득이 왜 필요해요?">
           은행은 갚을 능력을 확인해요. 월급 대비 매달 갚는 돈이 많으면 대출이 줄어요. 집값·소득에 따라 디딤돌대출 · HF 보금자리론 · 일반 주택담보대출 중 어떤 상품을 받을 수 있는지도 달라져요.
         </WhyToggle>
-        <Field label="연소득 (세전)이 얼마예요?" sub="부부라면 합산 소득으로 · (세전 · 은행 심사 기준)" unit="만원/년" value={d.income} onChange={v => set('income', v)} />
-        <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} />
-        <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기는 나이 제한이 있어요 (신혼가구는 완화)" unit="세" value={d.age} onChange={onAgeChange} />
+        <Field label="기존에 매달 갚는 대출이 있나요?" sub="자동차 할부, 학자금 등 · 없으면 0" unit="만원/월" value={d.existingMonthly} onChange={v => set('existingMonthly', v)} placeholder="0" />
+        <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기는 나이 제한이 있어요 (신혼가구는 완화)" unit="세" value={d.age} onChange={onAgeChange} placeholder="32" />
 
         <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>
         <div className="chips">
@@ -84,21 +85,17 @@ export default function Step1Loan() {
 
       <div className="card">
         <div className="sect">🧮 내 조건에 해당할 수 있는 상품</div>
-        <div className="flabel">{LOAN_LABELS[type]}</div>
-        <p className="fsub">{reason}</p>
-
-        <button className="override-toggle" onClick={() => setShowOverride(o => !o)}>
-          <span>🔄 이 조건이 아닌 것 같아요</span>
-          <span style={{ marginLeft: 'auto' }}>{showOverride ? '▲' : '▼'}</span>
-        </button>
-        {showOverride && (
-          <div className="chips" style={{ marginTop: 10, marginBottom: 14 }}>
-            {Object.entries(LOAN_LABELS).map(([key, label]) => (
-              <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
-            ))}
-            <Chip on={!d.loanTypeOverride} onClick={() => set('loanTypeOverride', null)}>자동 계산으로</Chip>
-          </div>
+        <div className="chips">
+          {Object.entries(LOAN_LABELS).map(([key, label]) => (
+            <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
+          ))}
+        </div>
+        {d.loanTypeOverride && (
+          <button className="override-toggle" style={{ marginTop: 8 }} onClick={() => set('loanTypeOverride', null)}>
+            <span>↺ 자동 계산으로 되돌리기</span>
+          </button>
         )}
+        <p className="fsub" style={{ marginTop: 10 }}>{reason}</p>
 
         {type === 'didimdol' && (
           <>
@@ -129,7 +126,21 @@ export default function Step1Loan() {
         <div className="row"><span className="l">예상 월 상환액</span><span className="r">{fmtW(monthly)}</span></div>
       </div>
 
-      <button className="pbtn" onClick={() => { set('loan', r.fin); go(1) }}>이 금액으로 필요한 현금 계산하기</button>
+      {showWarning && (
+        <p className="fsub" style={{ color: 'var(--danger, #d9534f)', textAlign: 'center', marginBottom: 8 }}>
+          집값이나 소득을 입력하지 않으면 대출 한도가 정확하지 않아요
+        </p>
+      )}
+      <button
+        className="pbtn"
+        onClick={() => {
+          if (missingInput && !showWarning) { setShowWarning(true); return }
+          set('loan', r.fin)
+          go(1)
+        }}
+      >
+        {missingInput && showWarning ? '그래도 계속할게요' : '이 금액으로 필요한 현금 계산하기'}
+      </button>
     </>
   )
 }

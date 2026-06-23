@@ -21,6 +21,11 @@ export default function Step5Checklist() {
 
   return (
     <>
+      <div className="card" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 32, marginBottom: 4 }}>🏡</div>
+        <div className="sect">새 둥지로 이사하는 날까지, 둥지가 함께할게요!</div>
+      </div>
+
       <div className="card">
         <div className="sect">📅 잔금일이 언제예요?</div>
         <div className="frow">

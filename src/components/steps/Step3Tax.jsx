@@ -25,8 +25,8 @@ export default function Step3Tax() {
         <p className="fsub">
           <a href="https://www.wetax.go.kr" target="_blank" rel="noreferrer">위택스 바로가기</a>에서 정확한 취득세·지방교육세를 조회할 수 있어요
         </p>
-        <Field label="취득세" unit="만원" value={d.acqTax} onChange={v => set('acqTax', v)} />
-        <Field label="지방교육세" unit="만원" value={d.eduTax} onChange={v => set('eduTax', v)} />
+        <Field label="취득세" unit="만원" value={d.acqTax} onChange={v => set('acqTax', v)} placeholder="0" />
+        <Field label="지방교육세" unit="만원" value={d.eduTax} onChange={v => set('eduTax', v)} placeholder="0" />
         <Verdict ok={true} label="합계" amount={fmt(total)} />
       </div>
 

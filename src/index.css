@@ -476,7 +476,7 @@ button:focus-visible {
 
 .stepper-track {
   position: absolute;
-  top: 14px;
+  top: 22px;
   left: calc(10% / 2);
   right: calc(10% / 2);
   height: 2px;
@@ -499,7 +499,7 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 0;
+  padding: 8px 0;
 }
 
 .step-badge {
@@ -525,11 +525,6 @@ button:focus-visible {
 
 .stepper-item.upcoming .step-badge {
   background: var(--line);
-}
-
-.stepper-item.upcoming .step-badge span,
-.stepper-item.upcoming .step-badge {
-  opacity: .5;
 }
 
 .step-label {

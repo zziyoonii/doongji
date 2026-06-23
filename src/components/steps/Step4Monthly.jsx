@@ -65,8 +65,8 @@ export default function Step4Monthly() {
         ) : (
           <p className="fsub">일반 주택담보대출은 정부 우대금리 혜택이 적용되지 않아요. 은행별 자체 우대 조건은 따로 상담받아보세요</p>
         )}
-        <Field label="월 실수령액 (세후)" sub="월급에서 세금·보험 떼고 받는 금액 · (실제 통장에 들어오는 금액)" unit="만원/월" value={d.netIncome} onChange={v => set('netIncome', v)} />
-        <Field label="한 달 생활비" sub="식비·교통·통신 등" unit="만원" value={d.living} onChange={v => set('living', v)} />
+        <Field label="월 실수령액 (세후)" sub="월급에서 세금·보험 떼고 받는 금액 · (실제 통장에 들어오는 금액)" unit="만원/월" value={d.netIncome} onChange={v => set('netIncome', v)} placeholder="400" />
+        <Field label="한 달 생활비" sub="식비·교통·통신 등" unit="만원" value={d.living} onChange={v => set('living', v)} placeholder="100" />
       </div>
 
       <PlusLock teaser={'입주 후 매달 얼마가 남는지,\n우대금리로 얼마나 아끼는지 확인해 보세요.'}>

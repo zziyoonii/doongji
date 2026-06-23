@@ -85,6 +85,30 @@ export function formatDateKo(date) {
 export const fmt = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '만원'
 export const fmtW = n => Math.round(n).toLocaleString('ko-KR') + '원'
 
+const KO_DIGITS = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
+const KO_UNITS = ['', '십', '백', '천']
+
+function digitsToKorean(num) {
+  const s = String(num)
+  let str = ''
+  for (let i = 0; i < s.length; i++) {
+    const d = +s[i]
+    const unitIdx = s.length - i - 1
+    if (d === 0) continue
+    str += (d === 1 && unitIdx > 0 ? '' : KO_DIGITS[d]) + KO_UNITS[unitIdx]
+  }
+  return str
+}
+
+// value는 '만원' 단위 숫자 (예: 30000 → 3억원)
+export function manwonToKorean(value) {
+  const v = Math.round(Math.abs(value))
+  if (v <= 0) return ''
+  const eok = Math.floor(v / 10000)
+  const man = v % 10000
+  return (eok > 0 ? digitsToKorean(eok) + '억' : '') + (man > 0 ? digitsToKorean(man) + '만' : '') + '원'
+}
+
 export function mpay(p, rt, y) {
   const r = rt / 100 / 12, n = y * 12
   if (p <= 0) return 0
