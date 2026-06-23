@@ -110,6 +110,13 @@ button:focus-visible {
   line-height: 1.5;
 }
 
+.intro {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+
 .frow {
   display: flex;
   align-items: center;
@@ -130,6 +137,24 @@ button:focus-visible {
   padding: 3px 10px;
   border-radius: 99px;
   margin-bottom: 10px;
+}
+
+.override-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--rs);
+  padding: 11px 14px;
+  margin: 12px 0 4px;
+}
+
+.override-toggle:active {
+  background: var(--bg);
 }
 
 .whybox {
@@ -169,6 +194,10 @@ button:focus-visible {
   background: var(--nest-soft);
   color: var(--nest);
   font-weight: 600;
+}
+
+.chip.disabled {
+  opacity: .4;
 }
 
 .row {
@@ -447,7 +476,7 @@ button:focus-visible {
 
 .stepper-track {
   position: absolute;
-  top: 14px;
+  top: 22px;
   left: calc(10% / 2);
   right: calc(10% / 2);
   height: 2px;
@@ -470,7 +499,7 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 0;
+  padding: 8px 0;
 }
 
 .step-badge {
@@ -496,11 +525,6 @@ button:focus-visible {
 
 .stepper-item.upcoming .step-badge {
   background: var(--line);
-}
-
-.stepper-item.upcoming .step-badge span,
-.stepper-item.upcoming .step-badge {
-  opacity: .5;
 }
 
 .step-label {

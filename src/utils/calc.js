@@ -3,20 +3,33 @@ export const STEP_SHORT = ['대출', '현금', '세금', '월납', '체크']
 
 export const RATES = { 10: 4.35, 15: 4.4, 20: 4.45, 30: 4.55, 40: 4.6, 50: 4.65 }
 
+// HF 보금자리론 기본금리 (만기별 차등, 연 4.60~4.90% — 한국주택금융공사 고시 기준)
+export const BOGEUMJARI_RATES = { 10: 4.6, 15: 4.65, 20: 4.7, 30: 4.75, 40: 4.85, 50: 4.9 }
+
+// HF 보금자리론 우대금리 고시 기준 (최대 1.0%p, 신혼가구·신생아출산가구는 중복 불가)
 export const DISCOUNTS = [
-  { id: 'youth', n: '저소득 청년', ds: '만 39세 이하, 연소득 6천만원 이하', r: .5 },
-  { id: 'newlywed', n: '신혼가구', ds: '혼인 7년 이내 또는 3개월 내 예정', r: .2 },
-  { id: 'social', n: '사회적 배려층', ds: '장애인, 한부모 가정 등', r: .5 },
-  { id: 'multichild', n: '다자녀 가구', ds: '2자녀 이상', r: .3 },
-  { id: 'first', n: '생애최초 구입', ds: '본인·배우자 주택 소유 이력 없음', r: .2 },
+  { id: 'youth', n: '저소득 청년', ds: '만 39세 이하, 연소득 6천만원 이하', r: .1 },
+  { id: 'newlywed', n: '신혼가구', ds: '혼인 7년 이내 또는 3개월 내 예정 · 신생아출산가구와 중복 불가', r: .3, exclusiveWith: 'baby' },
+  { id: 'baby', n: '신생아출산가구', ds: '신혼가구와 중복 불가', r: .2, exclusiveWith: 'newlywed' },
+  { id: 'social', n: '사회적 배려층', ds: '한부모·장애인·다문화 가구 (항목별, 최대 2종목 중복 가능)', r: .7 },
+  { id: 'multichild', n: '다자녀 가구', ds: '2자녀 0.5%p, 3자녀 이상 0.7%p', r: .5 },
+  { id: 'green', n: '녹색건축물', ds: '에너지효율 인증 주택', r: .1 },
+  { id: 'unsold', n: '미분양관리지역 입주', ds: '미분양관리지역 내 미분양주택', r: .2 },
   { id: 'fraud', n: '전세사기 피해자', ds: '피해자 결정문 보유', r: 1 },
 ]
 
 export const CHECKS = [
   {
     phase: '대출 준비 시작', days: -60, items: [
-      { text: '디딤돌/보금자리론 신청 시작 (심사까지 2~3주 소요)' },
-      { text: '주택금융공사 예상대출조회 확인', link: 'https://www.hf.go.kr', linkLabel: 'HF 예상대출조회 바로가기' },
+      {
+        text: '디딤돌/보금자리론 신청 시작 (심사까지 2~3주 소요)',
+        textByType: { general: '주택담보대출 신청 시작 (은행 방문 또는 비대면, 심사까지 1~2주 소요)' },
+      },
+      {
+        text: '주택금융공사 예상대출조회 확인', link: 'https://www.hf.go.kr', linkLabel: 'HF 예상대출조회 바로가기',
+        onlyTypes: ['didimdol', 'bogeumjari'],
+      },
+      { text: '대출받을 은행 방문해 한도·금리 비교 상담', onlyTypes: ['general'] },
     ],
   },
   {
@@ -35,7 +48,7 @@ export const CHECKS = [
   },
   {
     phase: 'D-1', days: -1, items: [
-      { text: '인지대+채권 비용 은행 계좌 입금 (65만원 여유있게)' },
+      { text: '인지대+채권 비용 은행 계좌 입금', id: 'bondFee' },
       { text: '법무사에게 카드 납부 의사 전달' },
       { text: '법무사 보수료 준비 확인' },
     ],
@@ -72,6 +85,30 @@ export function formatDateKo(date) {
 export const fmt = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('ko-KR') + '만원'
 export const fmtW = n => Math.round(n).toLocaleString('ko-KR') + '원'
 
+const KO_DIGITS = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구']
+const KO_UNITS = ['', '십', '백', '천']
+
+function digitsToKorean(num) {
+  const s = String(num)
+  let str = ''
+  for (let i = 0; i < s.length; i++) {
+    const d = +s[i]
+    const unitIdx = s.length - i - 1
+    if (d === 0) continue
+    str += (d === 1 && unitIdx > 0 ? '' : KO_DIGITS[d]) + KO_UNITS[unitIdx]
+  }
+  return str
+}
+
+// value는 '만원' 단위 숫자 (예: 30000 → 3억원)
+export function manwonToKorean(value) {
+  const v = Math.round(Math.abs(value))
+  if (v <= 0) return ''
+  const eok = Math.floor(v / 10000)
+  const man = v % 10000
+  return (eok > 0 ? digitsToKorean(eok) + '억' : '') + (man > 0 ? digitsToKorean(man) + '만' : '') + '원'
+}
+
 export function mpay(p, rt, y) {
   const r = rt / 100 / 12, n = y * 12
   if (p <= 0) return 0
@@ -91,11 +128,30 @@ export const LOAN_LABELS = {
   general: '일반 주택담보대출',
 }
 
+export const BOGEUMJARI_INCOME_LIMIT = 7000 // 부부합산 연소득 기준 (만원) — 일반 보금자리론 기준
+export const BOGEUMJARI_PRICE_LIMIT = 60000 // 주택가격 기준 (만원) — 일반 보금자리론 기준
+
+// 보금자리론 40·50년 만기 신청 연령 제한 (만 OO세 미만, 신혼가구는 기준 완화)
+export const BOGEUMJARI_AGE_LIMIT = {
+  40: { normal: 40, newlywed: 50 },
+  50: { normal: 35, newlywed: 40 },
+}
+
+export function bogeumjariYearAllowed(d, years) {
+  const limit = BOGEUMJARI_AGE_LIMIT[years]
+  if (!limit) return true
+  return d.age < (d.newlywed ? limit.newlywed : limit.normal)
+}
+
+function bogeumjariIncomeLimit() {
+  return BOGEUMJARI_INCOME_LIMIT
+}
+
 // 집값·소득·가구 조건에 따라 해당될 수 있는 대출 상품을 계산
 export function recommendLoanType(d) {
   if (d.price <= 50000 && d.income <= 7000) return 'didimdol'
   if (d.price <= 60000 && (d.newlywed || d.multichild)) return 'didimdol'
-  if (d.price <= 90000) return 'bogeumjari'
+  if (d.price <= BOGEUMJARI_PRICE_LIMIT && d.income <= bogeumjariIncomeLimit()) return 'bogeumjari'
   return 'general'
 }
 
@@ -107,7 +163,8 @@ export function loanReason(type, d) {
     return '신혼·다자녀 가구는 집값 6억원 이하면 디딤돌대출 한도가 늘어나요 🎉'
   }
   if (type === 'bogeumjari') return 'HF 보금자리론 기준으로 계산했어요'
-  return '집값이 9억원을 초과해 일반 주택담보대출 기준으로 계산했어요'
+  if (d.price > BOGEUMJARI_PRICE_LIMIT) return `집값이 ${(BOGEUMJARI_PRICE_LIMIT / 10000)}억원을 초과해 일반 주택담보대출 기준으로 계산했어요`
+  return `부부합산 연소득이 ${bogeumjariIncomeLimit().toLocaleString('ko-KR')}만원을 초과해 보금자리론 대상이 아니라 일반 주택담보대출 기준으로 계산했어요`
 }
 
 export function didimdolLimit(d) {
@@ -118,14 +175,20 @@ export function didimdolLimit(d) {
 }
 
 export function bogeumjariLimit(d) {
-  const rate = RATES[d.years]
-  const ltvPct = d.isFirst ? .8 : .7
+  const rate = BOGEUMJARI_RATES[d.years]
+  // 생애최초는 주택 유형 무관 80%(규제지역 70%)만 적용. 일반은 아파트 70%/기타주택 65%, 규제지역 10%p 차감
+  const ltvPct = d.isFirst
+    ? (d.regulatedArea ? .7 : .8)
+    : d.houseType === 'other'
+      ? (d.regulatedArea ? .55 : .65)
+      : (d.regulatedArea ? .6 : .7)
+  const dtiPct = d.isFirst ? .6 : (d.regulatedArea ? .5 : .6)
   const ltv = Math.floor(d.price * ltvPct / 100) * 100
-  const cap = d.isFirst ? 42000 : 36000
-  const mm = (d.income / 12) * .6 - d.existingMonthly
+  const cap = Math.max(36000, d.isFirst ? 42000 : 0, d.multichild ? 40000 : 0)
+  const mm = (d.income / 12) * dtiPct - d.existingMonthly
   const dtiL = annuityLimit(mm, rate, d.years)
   const fin = Math.max(Math.min(ltv, cap, dtiL), 0)
-  return { type: 'bogeumjari', ltv, ltvPct: ltvPct * 100, cap, dtiL, fin, rate }
+  return { type: 'bogeumjari', ltv, ltvPct: ltvPct * 100, dtiPct: dtiPct * 100, cap, dtiL, fin, rate }
 }
 
 export function generalLimit(d) {
@@ -151,11 +214,3 @@ export function flow(d) {
   return { bal, gn, fees, have, diff: have + gn - bal - fees }
 }
 
-export function tax(d) {
-  const rate = d.price <= 60000 ? .01 : d.price <= 90000 ? .02 : .03
-  const acq = d.price * rate, edu = acq * .1, total = acq + edu
-  const fc = d.isFirst ? Math.min(total, 200) : 0
-  const bc = d.baby !== 'none' ? Math.min(total, 500) : 0
-  const best = Math.max(fc, bc)
-  return { rate, acq, edu, total, fc, bc, best, fin: Math.max(total - best, 0) }
-}

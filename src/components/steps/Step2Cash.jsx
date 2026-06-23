@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { Analytics } from '@apps-in-toss/web-framework'
 import { useApp } from '../../context/useApp'
 import { flow, fmt } from '../../utils/calc'
 import Field from '../ui/Field'
@@ -8,25 +10,29 @@ export default function Step2Cash() {
   const { d, set, setFee, go } = useApp()
   const r = flow(d)
 
+  useEffect(() => {
+    Analytics.screen({ log_name: 'balance_calc_complete' })
+  }, [])
+
   return (
     <>
       <div className="card">
         <div className="sect">💰 잔금일에 오가는 돈</div>
-        <Field label="계약금은 얼마 냈어요?" sub="보통 집값의 10%" unit="만원" value={d.deposit} onChange={v => set('deposit', v)} />
-        <Field label="대출 받는 금액" sub="STEP 1에서 계산한 금액이 들어가 있어요" unit="만원" value={d.loan} onChange={v => set('loan', v)} />
+        <Field label="계약금은 얼마 냈어요?" sub="보통 집값의 10%" unit="만원" value={d.deposit} onChange={v => set('deposit', v)} placeholder="3500" />
+        <Field label="대출 받는 금액" sub="STEP 1에서 계산한 금액이 들어가 있어요" unit="만원" value={d.loan} onChange={v => set('loan', v)} placeholder="0" />
       </div>
 
       <div className="card">
         <div className="sect">🏢 지금 전세·월세 보증금이 있나요?</div>
-        <Field label="돌려받을 보증금" sub="없으면 0" unit="만원" value={d.guarantee} onChange={v => set('guarantee', v)} />
-        <Field label="보증금에 묶인 대출" sub="전세자금대출 등 — 받자마자 바로 갚아야 해요" unit="만원" value={d.oldLoan} onChange={v => set('oldLoan', v)} />
+        <Field label="돌려받을 보증금" sub="없으면 0" unit="만원" value={d.guarantee} onChange={v => set('guarantee', v)} placeholder="0" />
+        <Field label="보증금에 묶인 대출" sub="전세자금대출 등 — 받자마자 바로 갚아야 해요" unit="만원" value={d.oldLoan} onChange={v => set('oldLoan', v)} placeholder="0" />
       </div>
 
       <div className="card">
         <div className="sect">👛 내가 준비한 돈</div>
-        <Field label="통장에 있는 현금" unit="만원" value={d.cash} onChange={v => set('cash', v)} />
-        <Field label="잔금일 전에 들어올 돈" sub="주식 매도금 등 — 국내주식은 매도 후 영업일 2일 뒤 입금돼요!" unit="만원" value={d.stock} onChange={v => set('stock', v)} />
-        <Field label="가족·지인에게 빌리는 돈" sub="없으면 0" unit="만원" value={d.borrow} onChange={v => set('borrow', v)} />
+        <Field label="통장에 있는 현금" unit="만원" value={d.cash} onChange={v => set('cash', v)} placeholder="0" />
+        <Field label="잔금일 전에 들어올 돈" sub="주식 매도금 등 — 국내주식은 매도 후 영업일 2일 뒤 입금돼요!" unit="만원" value={d.stock} onChange={v => set('stock', v)} placeholder="0" />
+        <Field label="가족·지인에게 빌리는 돈" sub="없으면 0" unit="만원" value={d.borrow} onChange={v => set('borrow', v)} placeholder="0" />
       </div>
 
       <div className="card">
@@ -34,11 +40,7 @@ export default function Step2Cash() {
         {d.fees.map((f, i) => (
           <div key={f.id}>
             {f.why && <WhyToggle q={`${f.name}이 뭐예요?`}>{f.why}</WhyToggle>}
-            <div className="flabel">{f.name}</div>
-            <div className="frow">
-              <input type="number" value={f.a || ''} onChange={e => setFee(i, +e.target.value || 0)} />
-              <span>만원</span>
-            </div>
+            <Field label={f.name} unit="만원" value={f.a} onChange={v => setFee(i, v)} />
           </div>
         ))}
       </div>
