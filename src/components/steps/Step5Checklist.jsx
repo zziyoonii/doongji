@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { Analytics } from '@apps-in-toss/web-framework'
 import { useApp } from '../../context/useApp'
 import { CHECKS, addDays, formatDateKo, fmt, recommendLoanType } from '../../utils/calc'
+import { logScreen, logClick } from '../../utils/analytics'
 import { addToCalendar } from '../../utils/ics'
 
 export default function Step5Checklist() {
@@ -11,12 +11,12 @@ export default function Step5Checklist() {
   const loanType = d.loanTypeOverride || recommendLoanType(d)
 
   useEffect(() => {
-    Analytics.screen({ log_name: 'checklist_viewed' })
+    logScreen('checklist_viewed')
   }, [])
 
   const onToggleDone = item => {
     toggleDone(item)
-    Analytics.click({ log_name: 'checklist_item_checked' })
+    logClick('checklist_item_checked')
   }
 
   return (

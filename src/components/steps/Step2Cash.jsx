@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { Analytics } from '@apps-in-toss/web-framework'
 import { useApp } from '../../context/useApp'
 import { flow, fmt } from '../../utils/calc'
+import { logScreen } from '../../utils/analytics'
 import Field from '../ui/Field'
 import WhyToggle from '../ui/WhyToggle'
 import Verdict from '../ui/Verdict'
@@ -11,7 +11,7 @@ export default function Step2Cash() {
   const r = flow(d)
 
   useEffect(() => {
-    Analytics.screen({ log_name: 'balance_calc_complete' })
+    logScreen('balance_calc_complete')
   }, [])
 
   return (
