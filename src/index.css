@@ -477,8 +477,8 @@ button:focus-visible {
 .stepper-track {
   position: absolute;
   top: 22px;
-  left: calc(10% / 2);
-  right: calc(10% / 2);
+  left: 10%;
+  right: 10%;
   height: 2px;
   background: var(--line);
   z-index: 0;
