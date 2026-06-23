@@ -85,7 +85,7 @@ export default function Step1Loan() {
 
       <div className="card">
         <div className="sect">🧮 내 조건에 해당할 수 있는 상품</div>
-        <div className="chips">
+        <div className="chips stack">
           {Object.entries(LOAN_LABELS).map(([key, label]) => (
             <Chip key={key} on={type === key} onClick={() => set('loanTypeOverride', key)}>{label}</Chip>
           ))}

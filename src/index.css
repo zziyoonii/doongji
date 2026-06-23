@@ -200,6 +200,15 @@ button:focus-visible {
   opacity: .4;
 }
 
+.chips.stack {
+  flex-direction: column;
+}
+
+.chips.stack .chip {
+  width: 100%;
+  text-align: left;
+}
+
 .row {
   display: flex;
   justify-content: space-between;

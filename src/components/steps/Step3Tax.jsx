@@ -41,7 +41,7 @@ export default function Step3Tax() {
           <p className="fsub" style={{ marginBottom: 0 }}>생애최초 감면 대상이에요. 위택스에서 확인해보세요</p>
         )}
         <div className="flabel" style={{ marginBottom: 8, marginTop: 14 }}>자녀가 있거나 곧 태어나요?</div>
-        <div className="chips">
+        <div className="chips stack">
           {BABY_OPTIONS.map(([val, l]) => (
             <Chip key={val} on={d.baby === val} onClick={() => set('baby', val)}>{l}</Chip>
           ))}
