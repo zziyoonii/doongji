@@ -56,7 +56,9 @@ export default function Step1Loan() {
           서울·인천·경기 또는 조정대상지역·투기과열지구 등 규제지역의 집은 보금자리론 LTV·DTI 한도가 10%p씩 줄어요. 생애최초는 예외지만, 수도권에 집을 살 땐 LTV가 80%가 아니라 70%로 적용돼요.
         </WhyToggle>
 
-        {!d.isFirst && (
+        {d.isFirst ? (
+          <p className="fsub" style={{ marginBottom: 0 }}>생애최초는 아파트·연립·다세대·단독 등 주택 유형과 관계없이 LTV가 동일하게 적용돼요</p>
+        ) : (
           <>
             <div className="flabel" style={{ marginBottom: 8 }}>어떤 주택이에요?</div>
             <div className="chips">
