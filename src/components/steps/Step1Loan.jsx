@@ -5,6 +5,7 @@ import Field from '../ui/Field'
 import WhyToggle from '../ui/WhyToggle'
 import Verdict from '../ui/Verdict'
 import Chip from '../ui/Chip'
+import ConfirmSheet from '../ui/ConfirmSheet'
 
 export default function Step1Loan() {
   const { d, set, go } = useApp()
@@ -126,21 +127,25 @@ export default function Step1Loan() {
         <div className="row"><span className="l">예상 월 상환액</span><span className="r">{fmtW(monthly)}</span></div>
       </div>
 
-      {showWarning && (
-        <p className="fsub" style={{ color: 'var(--danger, #d9534f)', textAlign: 'center', marginBottom: 8 }}>
-          집값이나 소득을 입력하지 않으면 대출 한도가 정확하지 않아요
-        </p>
-      )}
       <button
         className="pbtn"
         onClick={() => {
-          if (missingInput && !showWarning) { setShowWarning(true); return }
+          if (missingInput) { setShowWarning(true); return }
           set('loan', r.fin)
           go(1)
         }}
       >
-        {missingInput && showWarning ? '그래도 계속할게요' : '이 금액으로 필요한 현금 계산하기'}
+        이 금액으로 필요한 현금 계산하기
       </button>
+
+      <ConfirmSheet
+        open={showWarning}
+        title="입력값을 확인해주세요"
+        body="집값이나 소득을 입력하지 않으면 대출 한도가 정확하지 않아요"
+        confirmLabel="그래도 계속할게요"
+        onConfirm={() => { setShowWarning(false); set('loan', r.fin); go(1) }}
+        onCancel={() => setShowWarning(false)}
+      />
     </>
   )
 }

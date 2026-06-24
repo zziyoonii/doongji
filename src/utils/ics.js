@@ -1,4 +1,5 @@
 import { toIcsDate } from './icsCore'
+import { openExternal } from './openExternal'
 
 function toGcalDate(date) {
   const next = new Date(date)
@@ -16,11 +17,5 @@ function gcalUrl(title, date) {
 }
 
 export async function addToCalendar(title, date) {
-  const url = gcalUrl(title, date)
-  if (typeof window !== 'undefined' && window.ReactNativeWebView) {
-    const { openURL } = await import('@apps-in-toss/web-framework')
-    await openURL(url)
-    return
-  }
-  window.open(url, '_blank', 'noopener')
+  await openExternal(gcalUrl(title, date))
 }
