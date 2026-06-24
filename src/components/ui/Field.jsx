@@ -18,7 +18,11 @@ export default function Field({ label, sub, unit, value, onChange, placeholder }
   }
 
   const moveCursorToEnd = pos => {
-    requestAnimationFrame(() => inputRef.current?.setSelectionRange(pos, pos))
+    requestAnimationFrame(() => {
+      const el = inputRef.current
+      if (!el || el.selectionStart !== el.selectionEnd) return
+      el.setSelectionRange(pos, pos)
+    })
   }
 
   const handleChange = e => {
