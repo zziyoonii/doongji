@@ -42,19 +42,21 @@ export default function Field({ label, sub, unit, value, onChange, placeholder }
       <div className="flabel">{label}</div>
       {sub && <div className="fsub">{sub}</div>}
       <div className="frow">
-        <input
-          ref={inputRef}
-          type="text"
-          inputMode="decimal"
-          value={raw}
-          placeholder={placeholder}
-          onChange={handleChange}
-          onFocus={e => moveCursorToEnd(e.target.value.length)}
-          onClick={e => moveCursorToEnd(e.target.value.length)}
-        />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="decimal"
+            value={raw}
+            placeholder={placeholder}
+            onChange={handleChange}
+            onFocus={e => moveCursorToEnd(e.target.value.length)}
+            onClick={e => moveCursorToEnd(e.target.value.length)}
+          />
+          {korean && <div className="fsub" style={{ marginTop: 4, marginBottom: 0, textAlign: 'right' }}>{korean}</div>}
+        </div>
         <span>{unit}</span>
       </div>
-      {korean && <div className="fsub" style={{ marginTop: -2 }}>{korean}</div>}
     </>
   )
 }
