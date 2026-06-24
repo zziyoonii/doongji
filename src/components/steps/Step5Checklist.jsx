@@ -3,6 +3,7 @@ import { useApp } from '../../context/useApp'
 import { CHECKS, addDays, formatDateKo, fmt, recommendLoanType } from '../../utils/calc'
 import { logScreen, logClick } from '../../utils/analytics'
 import { addToCalendar } from '../../utils/ics'
+import { openExternal } from '../../utils/openExternal'
 
 export default function Step5Checklist() {
   const { d, set, toggleDone, go } = useApp()
@@ -58,7 +59,7 @@ export default function Step5Checklist() {
                   <span className="check-text" style={{ lineHeight: 1.5 }}>{text}</span>
                   {date && <span className="check-due">{formatDateKo(date)}까지</span>}
                   {it.link && (
-                    <a className="check-link" href={it.link} target="_blank" rel="noreferrer">{it.linkLabel}</a>
+                    <a className="check-link" href={it.link} onClick={e => { e.preventDefault(); openExternal(it.link) }}>{it.linkLabel}</a>
                   )}
                 </span>
                 {date && (
