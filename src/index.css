@@ -209,6 +209,16 @@ button:focus-visible {
   text-align: left;
 }
 
+.chips.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.chips.grid2 .chip {
+  width: 100%;
+  text-align: center;
+}
+
 .row {
   display: flex;
   justify-content: space-between;

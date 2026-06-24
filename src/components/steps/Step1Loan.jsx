@@ -47,7 +47,7 @@ export default function Step1Loan() {
         <Field label="나이가 어떻게 되세요?" sub="보금자리론 40·50년 만기는 나이 제한이 있어요 (신혼가구는 완화)" unit="세" value={d.age} onChange={onAgeChange} placeholder="32" />
 
         <div className="flabel" style={{ marginBottom: 8 }}>해당하는 게 있나요?</div>
-        <div className="chips">
+        <div className="chips grid2">
           <Chip on={d.isFirst} onClick={() => set('isFirst', !d.isFirst)}>생애최초 구입</Chip>
           <Chip on={d.newlywed} onClick={onNewlywedClick}>신혼부부예요</Chip>
           <Chip on={d.multichild} onClick={() => set('multichild', !d.multichild)}>2자녀 이상이에요</Chip>
