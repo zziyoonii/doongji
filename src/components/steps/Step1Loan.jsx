@@ -58,10 +58,10 @@ export default function Step1Loan() {
         </WhyToggle>
 
         {d.isFirst ? (
-          <p className="fsub" style={{ marginBottom: 0 }}>생애최초는 아파트·연립·다세대·단독 등 주택 유형과 관계없이 LTV가 동일하게 적용돼요</p>
+          <p className="fsub" style={{ marginTop: 4, marginBottom: 0 }}>생애최초는 아파트·연립·다세대·단독 등 주택 유형과 관계없이 LTV가 동일하게 적용돼요</p>
         ) : (
           <>
-            <div className="flabel" style={{ marginBottom: 8 }}>어떤 주택이에요?</div>
+            <div className="flabel" style={{ marginTop: 4, marginBottom: 8 }}>어떤 주택이에요?</div>
             <div className="chips">
               <Chip on={d.houseType === 'apt'} onClick={() => set('houseType', 'apt')}>아파트</Chip>
               <Chip on={d.houseType === 'other'} onClick={() => set('houseType', 'other')}>기타주택 (연립·다세대·단독 등)</Chip>
@@ -69,7 +69,7 @@ export default function Step1Loan() {
           </>
         )}
 
-        <div className="flabel" style={{ marginBottom: 8 }}>몇 년에 걸쳐 갚을까요?</div>
+        <div className="flabel" style={{ marginTop: 18, marginBottom: 8 }}>몇 년에 걸쳐 갚을까요?</div>
         <div className="chips">
           {[10, 15, 20, 30, 40, 50].map(y => {
             const disabled = type === 'bogeumjari' && !bogeumjariYearAllowed(d, y)
