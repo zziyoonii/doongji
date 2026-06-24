@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { useApp } from './context/useApp'
 import { STEPS, STEP_SHORT } from './utils/calc'
+import { setupPlusAccessoryButton } from './utils/navAccessory'
 import Step1Loan from './components/steps/Step1Loan'
 import Step2Cash from './components/steps/Step2Cash'
 import Step3Tax from './components/steps/Step3Tax'
@@ -13,21 +15,17 @@ export default function App() {
   const { step, go, isPlus, openPaywall } = useApp()
   const StepComponent = STEP_COMPONENTS[step]
 
+  useEffect(() => {
+    if (isPlus) return
+    let cleanup = () => {}
+    setupPlusAccessoryButton(openPaywall).then(fn => { cleanup = fn })
+    return () => cleanup()
+  }, [isPlus, openPaywall])
+
   return (
     <div id="app">
-      <header style={{ padding: '22px 0 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>🪺 둥지</h1>
-          <p style={{ fontSize: 12.5, color: 'var(--ink-soft)', marginTop: 2 }}>처음 집 살 때, 계산은 둥지가 할게요</p>
-        </div>
-        {!isPlus && (
-          <button
-            style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', background: 'var(--egg)', padding: '7px 14px', borderRadius: 99 }}
-            onClick={openPaywall}
-          >
-            PLUS
-          </button>
-        )}
+      <header style={{ padding: '22px 0 14px' }}>
+        <p style={{ fontSize: 12.5, color: 'var(--ink-soft)' }}>처음 집 살 때, 계산은 둥지가 할게요</p>
       </header>
 
       <nav className="stepper" aria-label="진행 단계">
