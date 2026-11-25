@@ -15,7 +15,7 @@ export default defineConfig({
     port: 5173,
     commands: {
       dev: "vite dev",
-      build: "vite build",
+      build: "vite build --mode ait",
     },
   },
   permissions: [],
